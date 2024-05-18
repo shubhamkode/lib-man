@@ -1,29 +1,33 @@
-from typing import List, Optional
 from abc import ABC, abstractmethod
-from src.features.student.domain.models.student_model import Student
+from src.features.student.domain.models.student_model import (
+    Student,
+    CreateStudentSchema,
+    UpdateStudentSchema,
+)
 
 
 class AbstractStudentRepository(ABC):
+
     @abstractmethod
-    def get_all_students(self) -> List[Student]:
+    def create(self, new_student: CreateStudentSchema) -> str | None:
         pass
 
     @abstractmethod
-    def create_new_student(self) -> None:
+    def get_all(self) -> list[Student]:
         pass
 
     @abstractmethod
-    def get_student_by_id(self) -> Optional[Student]:
+    def get(self, id: str) -> Student | None:
         pass
 
     @abstractmethod
-    def delete_student_by_id(self) -> None:
+    def update(self, updated_student: UpdateStudentSchema) -> str | None:
         pass
 
     @abstractmethod
-    def update_student_by_id(self) -> None:
+    def delete(self, id: str) -> str | None:
         pass
 
     @abstractmethod
-    def update_record(self) -> None:
+    def update_record(self, student_id: str, book_id: str | None):
         pass

@@ -1,14 +1,13 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class Book:
-    id: int
+    id: str
     title: str
     author: str
     publisher: str
-    student_id: Optional[int]
+    student_id: str | None = None
 
     def status(self) -> str:
         return "Available" if self.student_id == None else "Borrowed"
@@ -23,6 +22,7 @@ class CreateBookSchema:
 
 @dataclass
 class UpdateBookSchema:
-    title: Optional[str] = None
-    author: Optional[str] = None
-    publisher: Optional[str] = None
+    id: str
+    title: str | None = None
+    author: str | None = None
+    publisher: str | None = None

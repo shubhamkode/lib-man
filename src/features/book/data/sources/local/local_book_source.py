@@ -5,34 +5,33 @@ from src.features.book.domain.models.book_model import (
     UpdateBookSchema,
     CreateBookSchema,
 )
-from typing import Optional
 
 
 @dataclass
 class LocalBookSource(AbstractBookSource):
     db: DatabaseService
 
-    def create(self, book: CreateBookSchema):
-        self.db.mutation(
+    def create(self, book: CreateBookSchema) -> str | None:
+        return self.db.mutation(
             "INSERT INTO BOOK(title,author,publisher) VALUES (?,?,?)",
             (book.title, book.author, book.publisher),
         )
 
-    def get(self, id: str):
+    def get(self, id: str) -> tuple[str, ...] | None:
         res = self.db.query("SELECT * FROM BOOK WHERE id = ?", (id,))
         return res.fetchone()
 
-    def getAll(self):
-        res = self.db.query("SELECT * FROM BOOK;")
+    def getAll(self) -> list[tuple[str, ...]]:
+        res = self.db.query("SELECT * FROM BOOK")
         return res.fetchall()
 
-    def update(self, id: str, updated_book: UpdateBookSchema):
-        db_book = self.get(id)
+    def update(self, updated_book: UpdateBookSchema) -> str | None:
+        db_book = self.get(updated_book.id)
 
         if db_book == None:
             return
 
-        self.db.mutation(
+        return self.db.mutation(
             "UPDATE BOOK SET title = ?, author = ?, publisher = ? WHERE id = ? ",
             (
                 db_book[1] if updated_book.title == None else updated_book.title,
@@ -42,18 +41,14 @@ class LocalBookSource(AbstractBookSource):
                     if updated_book.publisher == None
                     else updated_book.publisher
                 ),
-                id,
+                updated_book.id,
             ),
         )
 
-    def delete(self, id: str):
-        self.db.mutation("DELETE FROM BOOK WHERE id = ?", (id,))
+    def delete(self, id: str) -> str | None:
+        return self.db.mutation("DELETE FROM BOOK WHERE id = ?", (id,))
 
-    def update_book_record(self, book_id: str, student_id: Optional[str]):
+    def update_record(self, book_id: str, student_id: str | None):
         self.db.mutation(
             "UPDATE BOOK SET student_id = ? WHERE id = ?", (student_id, book_id)
         )
-
-    def search(self):
-        # TODO:- IMPLEMENT SEARCH FUNCTIONALITY
-        pass

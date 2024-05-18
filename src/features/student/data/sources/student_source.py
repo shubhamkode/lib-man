@@ -1,27 +1,31 @@
 from abc import ABC, abstractmethod
+from src.features.student.domain.models.student_model import (
+    UpdateStudentSchema,
+    CreateStudentSchema,
+)
 
 
-class AbstractStudentDataSource(ABC):
+class AbstractStudentSource(ABC):
     @abstractmethod
-    def create(self):
+    def create(self, student: CreateStudentSchema) -> str | None:
         pass
 
     @abstractmethod
-    def update(self):
+    def getAll(self) -> list[tuple[str, ...]]:
         pass
 
     @abstractmethod
-    def delete(self):
+    def get(self, id: str) -> tuple[str, ...] | None:
         pass
 
     @abstractmethod
-    def get(self):
+    def update(self, updated_student: UpdateStudentSchema) -> str | None:
         pass
 
     @abstractmethod
-    def getAll(self):
+    def delete(self, id: str) -> str | None:
         pass
 
     @abstractmethod
-    def update_record(self):
+    def student_update_record(self, student_id: str, book_id: str | None):
         pass

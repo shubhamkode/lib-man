@@ -1,4 +1,3 @@
-from typing import List, Optional
 from dataclasses import dataclass
 from src.features.student.domain.models.student_model import (
     Student,
@@ -8,40 +7,43 @@ from src.features.student.domain.models.student_model import (
 from src.features.student.domain.repository.student_repo import (
     AbstractStudentRepository,
 )
-from src.features.student.data.sources.student_source import AbstractStudentDataSource
+from src.features.student.data.sources.student_source import AbstractStudentSource
 
 
 @dataclass
 class StudentRepositoryImpl(AbstractStudentRepository):
-    source: AbstractStudentDataSource
+    source: AbstractStudentSource
 
-    def get_all_students(self) -> List[Student]:
+    def create(self, new_student: CreateStudentSchema) -> str | None:
+        return self.source.create(new_student)
 
-        students = self.source.getAll()
+    def get_all(self) -> list[Student]:
+        db_students = self.source.getAll()
 
         return [
-            Student(student[0], student[1], student[2], student[3])
-            for student in students
+            Student(db_student[0], db_student[1], db_student[2], db_student[3])
+            for db_student in db_students
         ]
 
-    def create_new_student(self, data: CreateStudentSchema) -> None:
-        self.source.create(data)
+    def get(self, id: str) -> Student | None:
+        db_student = self.source.get(id)
 
-    def get_student_by_id(self, studentId: str) -> Optional[Student]:
-        db_student = self.source.get(studentId)
+        return (
+            Student(
+                id=db_student[0],
+                name=db_student[1],
+                phone_no=db_student[2],
+                book_id=db_student[3],
+            )
+            if db_student != None
+            else None
+        )
 
-        if not db_student:
-            return None
+    def update(self, updated_student: UpdateStudentSchema) -> str | None:
+        return self.source.update(updated_student)
 
-        return Student(db_student[0], db_student[1], db_student[2], db_student[3])
+    def delete(self, id: str) -> str | None:
+        return self.source.delete(id)
 
-    def delete_student_by_id(self, student_id: str) -> None:
-        self.source.delete(student_id)
-
-    def update_student_by_id(
-        self, student_id: str, updated_student: UpdateStudentSchema
-    ) -> None:
-        self.source.update(student_id, updated_student)
-
-    def update_record(self, id: str, book_id: Optional[str]) -> None:
-        self.source.update_record(id, book_id)
+    def update_record(self, student_id: str, book_id: str | None):
+        self.source.student_update_record(student_id, book_id)

@@ -19,7 +19,7 @@ def runApp():
     dbClient = SQLiteDatabaseService(DATABASE_NAME)
     dbClient.setup(get_database_queries(DATABASE_SQL_FILE))
 
-    [book_view, student_view, record_view] = inject(dbClient)
+    (book_view, student_view, record_view) = inject(dbClient)
 
     clear_screen()
 

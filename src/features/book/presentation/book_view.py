@@ -1,17 +1,21 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Callable
 from src.features.book.domain.usecases import (
-    CreateNewBookUseCase,
-    CreateBookSchema,
-    GetAllBooksUseCase,
-    DeleteBookByIdUseCase,
-    GetBookByIdUseCase,
-    UpdateBookByIdUseCase,
+    BookCreateUseCase,
+    BookGetAllUseCase,
+    BookGetUseCase,
+    BookUpdateUseCase,
+    BookDeleteUseCase,
 )
 
-from src.features.student.domain.usecases import GetStudentByIdUseCase
 
-from src.features.book.domain.models.book_model import Book, UpdateBookSchema
+from src.features.student.domain.usecases import StudentGetUseCase
+
+from src.features.book.domain.models.book_model import (
+    Book,
+    UpdateBookSchema,
+    CreateBookSchema,
+)
 
 from src.utils.clear_screen import clear_screen
 from src.features.student.domain.models.student_model import Student
@@ -19,27 +23,29 @@ from src.features.student.domain.models.student_model import Student
 
 @dataclass
 class BookView:
-    create_new_book_usecase: CreateNewBookUseCase
-    get_all_books_usecase: GetAllBooksUseCase
-    get_book_by_id_usecase: GetBookByIdUseCase
-    update_book_by_id_usecase: UpdateBookByIdUseCase
-    delete_book_by_id_usecase: DeleteBookByIdUseCase
-    get_student_by_id_usecase: GetStudentByIdUseCase
+
+    book_create_usecase: BookCreateUseCase
+    book_get_all_usecase: BookGetAllUseCase
+    book_get_usecase: BookGetUseCase
+    book_update_usecase: BookUpdateUseCase
+    book_delete_usecase: BookDeleteUseCase
+
+    student_get_usecase: StudentGetUseCase
 
     def run(self):
-        options = [
-            ["Add Book", self.add_book],
-            ["Display All Books", self.display_all_books],
-            # ["Display available Books", self.display_available_books],
-            ["Search Book", self.search_book],
-            ["Update Book", self.update_book],
-            ["Delete Book", self.delete_book],
-        ]
+
+        options: dict[str, Callable[[], None]] = {
+            "Add Book": self.book_create,
+            "Display All Books": self.book_get_all,
+            "Search Book": self.book_get,
+            "Update Book": self.book_update,
+            "Delete Book": self.book_delete,
+        }
 
         while True:
             clear_screen()
-            for index, option in enumerate(options):
-                print(f"\t {index+1}. {option[0]}")
+            for index, key in enumerate(options.keys()):
+                print(f"\t {index+1}. {key}")
             print(f"\t {len(options)+1}. Return to Main Menu")
 
             user_choice = int(input(f"Enter your choice [1..{len(options)+1}]: "))
@@ -47,25 +53,19 @@ class BookView:
             if user_choice == len(options) + 1:
                 return
             else:
-                options[user_choice - 1][1]()
+                options[list(options.keys())[user_choice - 1]]()
 
                 input("\nPress Enter to Continue...\n")
 
-    def display_all_books(self):
-        clear_screen()
-        books = self.get_all_books_usecase.run()
-        print_books(books)
+    def book_create(self):
 
-    def add_book(self):
         while True:
             clear_screen()
             title = input("Enter Book Title: ")
             author = input("Enter Author: ")
             publisher = input("Enter Publisher: ")
 
-            self.create_new_book_usecase.run(
-                CreateBookSchema(title=title, author=author, publisher=publisher)
-            )
+            self.book_create_usecase.run(CreateBookSchema(title, author, publisher))
 
             print("Book Added Successfully....")
 
@@ -78,31 +78,29 @@ class BookView:
                 print("Invalid Choice..")
                 break
 
-        return
-
-    def delete_book(self):
+    def book_get_all(self):
         clear_screen()
-        book_id = input("Enter Book Id: ")
-        self.delete_book_by_id_usecase.run(book_id)
-        print(f"Book with id: {book_id} deleted successfully.")
+        print_books(self.book_get_all_usecase.run())
 
-    def search_book(self):
+    def book_get(self):
+
+        student: Student | None = None
+
         clear_screen()
         book_id = input("Enter BookId to be searched: ")
 
-        book = self.get_book_by_id_usecase.run(book_id)
+        db_book = self.book_get_usecase.run(book_id)
 
-        if book == None:
+        if db_book == None:
             print(f"No Book Found with Id: {book_id}")
             return
 
-        if book.student_id == None:
-            print_book(book, None)
-        else:
-            student = self.get_student_by_id_usecase.run(book.student_id)
-            print_book(book, student)
+        if db_book.student_id != None:
+            student = self.student_get_usecase.run(db_book.student_id)
 
-    def update_book(self):
+        print_book(db_book, student)
+
+    def book_update(self):
         clear_screen()
         book_id = input("Enter Book Id: ")
 
@@ -110,18 +108,25 @@ class BookView:
         author = input("Enter Updated Author: ")
         publisher = input("Enter Updated Publisher: ")
 
-        self.update_book_by_id_usecase.run(
-            book_id,
+        self.book_update_usecase.run(
             UpdateBookSchema(
+                book_id,
                 title if len(title) != 0 else None,
                 author if len(author) != 0 else None,
                 publisher if len(publisher) != 0 else None,
-            ),
+            )
         )
+
         print(f"Book with id: {book_id} updated successfully.")
 
+    def book_delete(self):
+        clear_screen()
+        book_id = input("Enter Book Id: ")
+        self.book_delete_usecase.run(book_id)
+        print(f"Book with id: {book_id} deleted successfully.")
 
-def print_books(books: List[Book]) -> None:
+
+def print_books(books: list[Book]) -> None:
     for book in books:
         print(
             f"""
@@ -135,7 +140,7 @@ def print_books(books: List[Book]) -> None:
         )
 
 
-def print_book(book: Book, student: Optional[Student]) -> None:
+def print_book(book: Book, student: Student | None = None) -> None:
     print(
         f"""
             ****************

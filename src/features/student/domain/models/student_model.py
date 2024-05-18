@@ -1,13 +1,12 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class Student:
-    id: int
+    id: str
     name: str
     phone_no: str
-    book_id: Optional[int]
+    book_id: str | None = None
 
 
 @dataclass
@@ -18,5 +17,6 @@ class CreateStudentSchema:
 
 @dataclass
 class UpdateStudentSchema:
-    name: Optional[str] = None
-    phone_no: Optional[str] = None
+    id: str
+    name: str | None = None
+    phone_no: str | None = None

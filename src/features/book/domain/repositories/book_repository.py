@@ -1,29 +1,32 @@
-from typing import List, Optional
 from abc import ABC, abstractmethod
-from src.features.book.domain.models.book_model import Book
+from src.features.book.domain.models.book_model import (
+    Book,
+    CreateBookSchema,
+    UpdateBookSchema,
+)
 
 
 class AbstractBookRepository(ABC):
     @abstractmethod
-    def getAllBooks(self) -> List[Book]:
+    def book_create(self, new_book: CreateBookSchema) -> str | None:
         pass
 
     @abstractmethod
-    def createNewBook(self) -> None:
+    def book_get_all(self) -> list[Book]:
         pass
 
     @abstractmethod
-    def get_book_by_id(self) -> Book:
+    def book_get(self, id: str) -> Book | None:
         pass
 
     @abstractmethod
-    def delete_book_by_id(self) -> None:
+    def book_delete(self, id: str) -> str | None:
         pass
 
     @abstractmethod
-    def update_book(self) -> None:
+    def book_update(self, updated_book: UpdateBookSchema) -> str | None:
         pass
 
     @abstractmethod
-    def update_book_record(self, book_id: str, student_id: Optional[str]):
+    def update_record(self, book_id: str, student_id: str | None):
         pass

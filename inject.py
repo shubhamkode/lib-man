@@ -16,20 +16,21 @@ from src.features.student.data.repositories.student_repo_impl import (
 
 # usecases
 from src.features.book.domain.usecases import (
-    CreateNewBookUseCase,
-    GetAllBooksUseCase,
-    DeleteBookByIdUseCase,
-    GetBookByIdUseCase,
-    UpdateBookByIdUseCase,
-    UpdateBookRecordUseCase,
+    BookCreateUseCase,
+    BookGetAllUseCase,
+    BookGetUseCase,
+    BookUpdateUseCase,
+    BookDeleteUseCase,
+    BookUpdateRecordUseCase
 )
 
+
 from src.features.student.domain.usecases import (
-    CreateNewStudentUseCase,
-    GetAllStudentsUseCase,
-    DeleteStudentByIdUseCase,
-    UpdateStudentByIdUseCase,
-    GetStudentByIdUseCase,
+    StudentCreateUseCase,
+    StudentGetAllUseCase,
+    StudentGetUseCase,
+    StudentUpdateUseCase,
+    StudentDeleteUseCase,
     UpdateStudentRecordUseCase,
 )
 
@@ -46,48 +47,50 @@ def inject(dbClient: DatabaseService):
     student_source = LocalStudentDataSource(dbClient)
 
     ## repositories
-    book_repository = BookRepositoryImpl(book_source)
+    book_repo = BookRepositoryImpl(book_source)
     student_repo = StudentRepositoryImpl(student_source)
 
     ## usecases
-    get_all_books_usecase = GetAllBooksUseCase(book_repository)
-    get_book_by_id_usecase = GetBookByIdUseCase(book_repository)
-    delete_book_by_id_usecase = DeleteBookByIdUseCase(book_repository)
-    create_new_book_usecase = CreateNewBookUseCase(book_repository)
-    update_book_by_id_usecase = UpdateBookByIdUseCase(book_repository)
-    update_book_record_usecase = UpdateBookRecordUseCase(book_repository)
+    book_create_usecase = BookCreateUseCase(book_repo)
+    book_get_all_usecase = BookGetAllUseCase(book_repo)
+    book_get_usecase = BookGetUseCase(book_repo)
+    book_update_usecase = BookUpdateUseCase(book_repo)
+    book_delete_usecase = BookDeleteUseCase(book_repo)
 
-    create_new_student_usecase = CreateNewStudentUseCase(student_repo)
-    get_all_students_usecase = GetAllStudentsUseCase(student_repo)
-    get_student_by_id_usecase = GetStudentByIdUseCase(student_repo)
-    update_student_by_id_usecase = UpdateStudentByIdUseCase(student_repo)
-    delete_student_by_id_usecase = DeleteStudentByIdUseCase(student_repo)
+    student_create_usecase = StudentCreateUseCase(student_repo)
+    student_get_all_usecase = StudentGetAllUseCase(student_repo)
+    student_get_usecase = StudentGetUseCase(student_repo)
+    student_update_usecase = StudentUpdateUseCase(student_repo)
+    student_delete_usecase = StudentDeleteUseCase(student_repo)
+
     update_student_record_usecase = UpdateStudentRecordUseCase(student_repo)
+    book_update_record_usecase = BookUpdateRecordUseCase(book_repo)
 
     book_view = BookView(
-        create_new_book_usecase=create_new_book_usecase,
-        get_all_books_usecase=get_all_books_usecase,
-        get_book_by_id_usecase=get_book_by_id_usecase,
-        update_book_by_id_usecase=update_book_by_id_usecase,
-        delete_book_by_id_usecase=delete_book_by_id_usecase,
-        get_student_by_id_usecase=get_student_by_id_usecase,
+        book_create_usecase=book_create_usecase,
+        book_get_all_usecase=book_get_all_usecase,
+        book_get_usecase=book_get_usecase,
+        book_update_usecase=book_update_usecase,
+        book_delete_usecase=book_delete_usecase,
+        student_get_usecase=student_get_usecase,
     )
 
     student_view = StudentView(
-        create_new_student_usecase=create_new_student_usecase,
-        get_all_students_usecase=get_all_students_usecase,
-        get_student_by_id_usecase=get_student_by_id_usecase,
-        update_student_by_id_usecase=update_student_by_id_usecase,
-        delete_student_by_id_usecase=delete_student_by_id_usecase,
-        get_book_by_id_usecase=get_book_by_id_usecase,
+        student_create_usecase=student_create_usecase,
+        student_get_all_usecase=student_get_all_usecase,
+        student_get_usecase=student_get_usecase,
+        student_update_usecase=student_update_usecase,
+        student_delete_usecase=student_delete_usecase,
+        book_get_usecase=book_get_usecase,
     )
 
     record_view = RecordView(
+        book_get_usecase=book_get_usecase,
+        book_update_usecase=book_update_usecase,
+        student_get_usecase=student_get_usecase,
+
+        book_update_record_usecase = book_update_record_usecase,
         update_student_record_usecase=update_student_record_usecase,
-        update_book_by_id_usecase=update_book_by_id_usecase,
-        get_book_by_id_usecase=get_book_by_id_usecase,
-        get_student_by_id_usecase=get_student_by_id_usecase,
-        update_book_record_usecase = update_book_record_usecase
     )
 
-    return [book_view, student_view, record_view]
+    return (book_view, student_view, record_view)

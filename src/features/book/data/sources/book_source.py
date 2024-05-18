@@ -1,32 +1,33 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+
+from src.features.book.domain.models.book_model import (
+    UpdateBookSchema,
+    CreateBookSchema,
+)
 
 
 class AbstractBookSource(ABC):
     @abstractmethod
-    def create(self):
+    def create(self, book: CreateBookSchema) -> str | None:
+        pass
+
+
+    @abstractmethod
+    def getAll(self) -> list[tuple[str, ...]]:
         pass
 
     @abstractmethod
-    def update(self):
+    def get(self, id: str) -> tuple[str, ...] | None:
         pass
 
     @abstractmethod
-    def delete(self):
+    def update(self, updated_book: UpdateBookSchema) -> str | None:
         pass
 
     @abstractmethod
-    def getAll(self):
+    def delete(self, id: str) -> str | None:
         pass
 
     @abstractmethod
-    def get(self):
-        pass
-
-    @abstractmethod
-    def search(self):
-        pass
-
-    @abstractmethod
-    def update_book_record(self, book_id: str, student_id: Optional[str]):
+    def update_record(self, book_id: str, student_id: str | None):
         pass

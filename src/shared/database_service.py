@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import _sqlite3
+import sqlite3
 
 
 class DatabaseService(ABC):
@@ -7,31 +7,38 @@ class DatabaseService(ABC):
     def __init__(self):
         pass
 
-    def query(self):
+    @abstractmethod
+    def query(self, query: str, parameters: tuple[str, ...] = ()) -> sqlite3.Cursor:
         pass
 
-    def mutation(self):
+    @abstractmethod
+    def mutation(
+        self, query: str, parameters: tuple[str | None, ...] = ()
+    ) -> str | None:
         pass
 
-    def setup(self):
+    @abstractmethod
+    def setup(self, setup_str: str):
         pass
 
 
 class SQLiteDatabaseService(DatabaseService):
     def __init__(self, dbName: str):
-        self.conn = _sqlite3.connect(f"{dbName}", check_same_thread=True)
+        self.conn = sqlite3.connect(f"{dbName}", check_same_thread=True)
         self.cursor = self.conn.cursor()
 
-    def query(self, queryStr: str, parameters=()):
-        return self.cursor.execute(queryStr, parameters)
+    def query(self, query: str, parameters: tuple[str, ...] = ()) -> sqlite3.Cursor:
+        res = self.cursor.execute(query, parameters)
+        return res
 
-    def mutation(self, mutationStr: str, parameters=()):
-        res = self.cursor.execute(mutationStr, parameters)
+    def mutation(
+        self, query: str, parameters: tuple[str | None, ...] = ()
+    ) -> str | None:
+        self.cursor.execute(query, parameters)
         self.conn.commit()
-        return res.lastrowid
 
-    def setup(self, setupStr: str):
-        self.cursor.executescript(setupStr)
+    def setup(self, setup_str: str):
+        self.cursor.executescript(setup_str)
 
     def __del__(self):
         self.cursor.close()

@@ -1,4 +1,3 @@
-from typing import List, Optional
 from src.features.book.domain.models.book_model import UpdateBookSchema
 from src.features.book.domain.models.book_model import Book, CreateBookSchema
 from src.features.book.domain.repositories.book_repository import AbstractBookRepository
@@ -10,29 +9,42 @@ from src.features.book.data.sources.book_source import AbstractBookSource
 class BookRepositoryImpl(AbstractBookRepository):
     source: AbstractBookSource
 
-    def getAllBooks(self) -> List[Book]:
+    def book_get_all(self) -> list[Book]:
+        db_books = self.source.getAll()
 
-        books = self.source.getAll()
+        return [
+            Book(
+                id=db_book[0],
+                title=db_book[1],
+                author=db_book[3],
+                publisher=db_book[2],
+            )
+            for db_book in db_books
+        ]
 
-        return [Book(book[0], book[1], book[3], book[2], book[4]) for book in books]
+    def book_create(self, new_book: CreateBookSchema) -> str | None:
+        return self.source.create(new_book)
 
-    def createNewBook(self, book: CreateBookSchema) -> None:
-        self.source.create(book)
+    def book_get(self, id: str) -> Book | None:
+        db_book = self.source.get(id)
 
-    def get_book_by_id(self, bookId: str) -> Optional[Book]:
+        return (
+            Book(
+                id=db_book[0],
+                title=db_book[1],
+                author=db_book[3],
+                publisher=db_book[2],
+                student_id=db_book[4],
+            )
+            if db_book != None
+            else None
+        )
 
-        db_book = self.source.get(bookId)
+    def book_delete(self, id: str) -> str | None:
+        return self.source.delete(id)
 
-        if not db_book:
-            return None
+    def book_update(self, updated_book: UpdateBookSchema) -> str | None:
+        return self.source.update(updated_book)
 
-        return Book(db_book[0], db_book[1], db_book[3], db_book[2], db_book[4])
-
-    def delete_book_by_id(self, book_id: str) -> None:
-        self.source.delete(book_id)
-
-    def update_book(self, book_id: str, updated_book: UpdateBookSchema) -> None:
-        self.source.update(book_id, updated_book)
-
-    def update_book_record(self, book_id: str, student_id: Optional[str]) -> None:
-        self.source.update_book_record(book_id, student_id)
+    def update_record(self, book_id: str, student_id: str | None):
+        self.source.update_record(book_id, student_id)

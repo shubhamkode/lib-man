@@ -1,15 +1,15 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Callable
 
 from src.features.student.domain.usecases import (
-    CreateNewStudentUseCase,
-    GetAllStudentsUseCase,
-    GetStudentByIdUseCase,
-    UpdateStudentByIdUseCase,
-    DeleteStudentByIdUseCase,
+    StudentCreateUseCase,
+    StudentGetAllUseCase,
+    StudentGetUseCase,
+    StudentUpdateUseCase,
+    StudentDeleteUseCase,
 )
 
-from src.features.book.domain.usecases import GetBookByIdUseCase
+from src.features.book.domain.usecases import BookGetUseCase
 
 from src.features.student.domain.models.student_model import (
     Student,
@@ -24,27 +24,28 @@ from src.utils.clear_screen import clear_screen
 
 @dataclass
 class StudentView:
-    create_new_student_usecase: CreateNewStudentUseCase
-    get_all_students_usecase: GetAllStudentsUseCase
-    get_student_by_id_usecase: GetStudentByIdUseCase
-    update_student_by_id_usecase: UpdateStudentByIdUseCase
-    delete_student_by_id_usecase: DeleteStudentByIdUseCase
 
-    get_book_by_id_usecase: GetBookByIdUseCase
+    student_create_usecase: StudentCreateUseCase
+    student_get_all_usecase: StudentGetAllUseCase
+    student_get_usecase: StudentGetUseCase
+    student_update_usecase: StudentUpdateUseCase
+    student_delete_usecase: StudentDeleteUseCase
+
+    book_get_usecase: BookGetUseCase
 
     def run(self):
-        options = [
-            ["Add Student", self.add_student],
-            ["Display All Students", self.display_all_students],
-            ["Search Student", self.search_student],
-            ["Update Student", self.update_student],
-            ["Delete Student", self.delete_student],
-        ]
+        options: dict[str, Callable[[], None]] = {
+            "Add Student": self.student_create,
+            "Display All Student": self.student_get_all,
+            "Search Student": self.student_get,
+            "Update Student": self.student_update,
+            "Delete Student": self.student_delete,
+        }
 
         while True:
             clear_screen()
-            for index, option in enumerate(options):
-                print(f"\t {index+1}. {option[0]}")
+            for index, key in enumerate(options.keys()):
+                print(f"\t {index+1}. {key}")
             print(f"\t {len(options)+1}. Return to Main Menu")
 
             user_choice = int(input(f"Enter your choice [1..{len(options)+1}]: "))
@@ -52,17 +53,26 @@ class StudentView:
             if user_choice == len(options) + 1:
                 return
             else:
-                options[user_choice - 1][1]()
+                options[list(options.keys())[user_choice - 1]]()
 
                 input("\nPress Enter to Continue...\n")
 
-    def add_student(self):
+    def student_create(self):
+        phone_no: str
+
         while True:
+
             clear_screen()
             name = input("Enter Student Name: ")
-            phone_no = input("Enter Student Phone No: ")
 
-            self.create_new_student_usecase.run(CreateStudentSchema(name, phone_no))
+            while True:
+                phone_no = input("Enter Student Phone No: ")
+                if len(phone_no) == 10:
+                    break
+                else:
+                    print("Invalid Phone No.")
+
+            self.student_create_usecase.run(CreateStudentSchema(name, phone_no))
 
             print("Student Added Successfully....")
 
@@ -75,55 +85,63 @@ class StudentView:
                 print("Invalid Choice..")
                 break
 
-        return
-
-    def display_all_students(self):
+    def student_get_all(self):
         clear_screen()
-        print_students(self.get_all_students_usecase.run())
+        print_students(self.student_get_all_usecase.run())
 
-    def search_student(self):
-        book = None
+    def student_get(self):
+
+        book: Book | None = None
+
+        clear_screen()
         student_id = input("Enter student Id: ")
 
-        student = self.get_student_by_id_usecase.run(student_id)
+        db_student = self.student_get_usecase.run(student_id)
 
-        if student == None:
+        if db_student == None:
             print(f"No Student found with Id: {student_id}")
             return
 
-        if student.book_id != None:
-            book = self.get_book_by_id_usecase.run(student.book_id)
+        if db_student.book_id != None:
+            book = self.book_get_usecase.run(db_student.book_id)
+
+        print_student(db_student, book)
+
+    def student_update(self):
+        phone_no: str
 
         clear_screen()
-        print_student(student, book)
 
-    def update_student(self):
-
-        clear_screen()
         student_id = input("Enter Student Id: ")
 
         name = input("Enter Updated Name: ")
-        phone_no = input("Enter Updated Phone No: ")
 
-        self.update_student_by_id_usecase.run(
-            student_id,
+        while True:
+            phone_no = input("Enter Updated Phone No: ")
+            if len(phone_no) == 10:
+                break
+            else:
+                print("Invalid Phone No.")
+
+        self.student_update_usecase.run(
             UpdateStudentSchema(
-                name if (len(name)) != 0 else None,
+                student_id,
+                name if len(name) != 0 else None,
                 phone_no if len(phone_no) != 0 else None,
-            ),
+            )
         )
 
         print(f"Student with id: {student_id} updated successfully.")
 
-    def delete_student(self):
-
+    def student_delete(self):
         clear_screen()
+
         student_id = input("Enter Student Id: ")
-        self.delete_student_by_id_usecase.run(student_id)
+        self.student_delete_usecase.run(student_id)
         print(f"Student with id: {student_id} deleted successfully..")
 
 
-def print_students(students: List[Student]) -> None:
+def print_students(students: list[Student]) -> None:
     for student in students:
         print(
             f"""
@@ -135,7 +153,7 @@ def print_students(students: List[Student]) -> None:
         )
 
 
-def print_student(student: Student, book: Optional[Book]):
+def print_student(student: Student, book: Book | None = None):
     print(
         f"""
             ****************
@@ -148,5 +166,3 @@ def print_student(student: Student, book: Optional[Book]):
                 ****
             ****************"""
     )
-
-    # {"" if student == None else f" Borrowed by: {student.id}.- {student.name} "}

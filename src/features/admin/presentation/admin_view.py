@@ -7,6 +7,8 @@ from src.features.student.presentation.student_view import StudentView
 from src.features.record.presentation.record_view import RecordView
 from src.utils.clear_screen import clear_screen
 
+from typing import Callable
+
 
 @dataclass
 class AdminView:
@@ -36,11 +38,11 @@ class AdminView:
             self.display_menu()
 
     def display_menu(self):
-        options = [
-            ["Book Management", self.manage_books],
-            ["Student Management", self.manage_students],
-            ["Issue or Return Book", self.issue_or_return_book],
-            ["Logout", self.exit],
+        options: list[tuple[str, Callable[[], None]]] = [
+            ("Book Management", self.manage_books),
+            ("Student Management", self.manage_students),
+            ("Issue or Return Book", self.issue_or_return_book),
+            ("Logout", self.exit),
         ]
 
         clear_screen()

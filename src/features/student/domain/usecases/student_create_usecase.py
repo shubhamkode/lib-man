@@ -4,10 +4,12 @@ from src.features.student.domain.repository.student_repo import (
 )
 from dataclasses import dataclass
 
+from src.utils.usecase import UseCase
+
 
 @dataclass
-class CreateNewStudentUseCase:
-    student_repo: AbstractStudentRepository
+class StudentCreateUseCase(UseCase[CreateStudentSchema, None]):
+    repo: AbstractStudentRepository
 
-    def run(self, student: CreateStudentSchema):
-        self.student_repo.create_new_student(student)
+    def run(self, args: CreateStudentSchema) -> None:
+        self.repo.create(args)
