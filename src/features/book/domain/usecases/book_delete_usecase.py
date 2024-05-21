@@ -8,5 +8,5 @@ from src.utils.usecase import UseCase
 class BookDeleteUseCase(UseCase[str, str | None]):
     repo: AbstractBookRepository
 
-    def run(self, args: str) -> str | None:
+    def __call__(self, args: str) -> str | None:
         return self.repo.book_delete(args)

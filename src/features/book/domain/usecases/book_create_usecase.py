@@ -9,5 +9,5 @@ from src.utils.usecase import UseCase
 class BookCreateUseCase(UseCase[CreateBookSchema, str | None]):
     repo: AbstractBookRepository
 
-    def run(self, args: CreateBookSchema) -> str | None:
+    def __call__(self, args: CreateBookSchema) -> str | None:
         return self.repo.book_create(args)

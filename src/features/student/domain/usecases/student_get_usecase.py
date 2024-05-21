@@ -11,5 +11,5 @@ from src.utils.usecase import UseCase
 class StudentGetUseCase(UseCase[str, Student | None]):
     repo: AbstractStudentRepository
 
-    def run(self, args: str) -> Student | None:
+    def __call__(self, args: str) -> Student | None:
         return self.repo.get(args)

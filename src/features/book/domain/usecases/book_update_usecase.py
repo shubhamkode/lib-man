@@ -8,5 +8,5 @@ from src.utils.usecase import UseCase
 class BookUpdateUseCase(UseCase[UpdateBookSchema, str | None]):
     repo: AbstractBookRepository
 
-    def run(self, args: UpdateBookSchema) -> str | None:
+    def __call__(self, args: UpdateBookSchema) -> str | None:
         return self.repo.book_update(args)

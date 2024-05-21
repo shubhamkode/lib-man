@@ -7,5 +7,5 @@ V = TypeVar("V")
 
 class UseCase(Generic[K, V], ABC):
     @abstractmethod
-    def run(self, args: K) -> V:
+    def __call__(self, args: K) -> V:
         pass

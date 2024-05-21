@@ -10,5 +10,5 @@ from src.utils.usecase import UseCase
 class StudentUpdateUseCase(UseCase[UpdateStudentSchema, str | None]):
     repo: AbstractStudentRepository
 
-    def run(self, args: UpdateStudentSchema) -> str | None:
+    def __call__(self, args: UpdateStudentSchema) -> str | None:
         return self.repo.update(args)

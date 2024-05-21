@@ -11,5 +11,5 @@ from src.utils.usecase import UseCase
 class BookGetAllUseCase(UseCase[None, list[Book]]):
     repo: AbstractBookRepository
 
-    def run(self, args: None = None) -> list[Book]:
+    def __call__(self, args: None = None) -> list[Book]:
         return self.repo.book_get_all()

@@ -10,6 +10,5 @@ class BookUpdateRecordUseCase(UseCase[tuple[str, str | None], None]):
 
     # 0 - bookId
     # 1 - student-Id
-    def run(self, args: tuple[str, str | None]) -> None:
+    def __call__(self, args: tuple[str, str | None]) -> None:
         return self.repo.update_record(args[0], args[1])
-

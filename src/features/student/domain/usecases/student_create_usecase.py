@@ -11,5 +11,5 @@ from src.utils.usecase import UseCase
 class StudentCreateUseCase(UseCase[CreateStudentSchema, None]):
     repo: AbstractStudentRepository
 
-    def run(self, args: CreateStudentSchema) -> None:
+    def __call__(self, args: CreateStudentSchema) -> None:
         self.repo.create(args)

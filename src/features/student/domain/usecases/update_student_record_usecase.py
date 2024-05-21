@@ -9,5 +9,5 @@ from src.features.student.domain.repository.student_repo import (
 class UpdateStudentRecordUseCase:
     student_repo: AbstractStudentRepository
 
-    def run(self, student_id: str, book_id: str | None):
+    def __call__(self, student_id: str, book_id: str | None):
         self.student_repo.update_record(student_id, book_id)

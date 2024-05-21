@@ -12,5 +12,5 @@ from src.utils.usecase import UseCase
 class StudentGetAllUseCase(UseCase[None, list[Student]]):
     repo: AbstractStudentRepository
 
-    def run(self, args: None = None) -> list[Student]:
+    def __call__(self, args: None = None) -> list[Student]:
         return self.repo.get_all()

@@ -10,5 +10,5 @@ from src.utils.usecase import UseCase
 class StudentDeleteUseCase(UseCase[str, str | None]):
     repo: AbstractStudentRepository
 
-    def run(self, args: str) -> str | None:
+    def __call__(self, args: str) -> str | None:
         return self.repo.delete(args)

@@ -21,7 +21,7 @@ from src.features.book.domain.usecases import (
     BookGetUseCase,
     BookUpdateUseCase,
     BookDeleteUseCase,
-    BookUpdateRecordUseCase
+    BookUpdateRecordUseCase,
 )
 
 
@@ -39,6 +39,8 @@ from src.features.student.domain.usecases import (
 from src.features.book.presentation.book_view import BookView
 from src.features.student.presentation.student_view import StudentView
 from src.features.record.presentation.record_view import RecordView
+
+from src.features.book.presentation.book_screen import BookScreen
 
 
 def inject(dbClient: DatabaseService):
@@ -88,9 +90,14 @@ def inject(dbClient: DatabaseService):
         book_get_usecase=book_get_usecase,
         book_update_usecase=book_update_usecase,
         student_get_usecase=student_get_usecase,
-
-        book_update_record_usecase = book_update_record_usecase,
+        book_update_record_usecase=book_update_record_usecase,
         update_student_record_usecase=update_student_record_usecase,
     )
 
-    return (book_view, student_view, record_view)
+    book_screen = BookScreen(
+        book_get_all_usecase=book_get_all_usecase,
+        book_delete_usecase=book_delete_usecase,
+        book_create_usecase=book_create_usecase,
+    )
+
+    return (book_screen, student_view, record_view)
