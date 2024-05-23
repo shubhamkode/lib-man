@@ -143,7 +143,6 @@ class BookScreen(_tk.Tk):
             on_book_add=self.show_add_book_dialog,
             on_book_update=self.update_book,
             on_book_delete=self.delete_books,
-            on_issue=self.issue_book,
             on_student_add=self.on_student_add,
         )
         self.menu_frame.grid(
@@ -186,7 +185,6 @@ class BookScreen(_tk.Tk):
             self.student_create_usecase(student)
         elif type(student) == UpdateStudentSchema:
             self.student_update_usecase(student)
-
 
         self.destroy_student_operations()
         self.student_view_frame.refresh_table()
