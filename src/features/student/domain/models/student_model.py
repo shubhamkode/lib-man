@@ -8,6 +8,9 @@ class Student:
     phone_no: str
     book_id: str | None = None
 
+    def to_tuple(self):
+        return (self.id, self.name, self.phone_no, self.book_id)
+
 
 @dataclass
 class CreateStudentSchema:

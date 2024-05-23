@@ -27,13 +27,6 @@ def runApp():
 
     (book_screen, student_view, record_view) = inject(dbClient)
 
-    # AdminView(
-    #     book_view=book_view,
-    #     student_view=student_view,
-    #     record_view=record_view,
-    # ).run()
-
-    # create_main_window()
 
     book_screen.mainloop()
 

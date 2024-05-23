@@ -22,7 +22,7 @@ class LocalStudentDataSource(AbstractStudentSource):
         return res.fetchone()
 
     def getAll(self) -> list[tuple[str, ...]]:
-        res = self.db.query("SELECT * FROM STUDENT")
+        res = self.db.query("SELECT * FROM STUDENT ORDER BY name ASC")
         return res.fetchall()
 
     def update(self, updated_student: UpdateStudentSchema) -> str | None:

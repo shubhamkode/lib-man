@@ -22,7 +22,7 @@ class LocalBookSource(AbstractBookSource):
         return res.fetchone()
 
     def getAll(self) -> list[tuple[str, ...]]:
-        res = self.db.query("SELECT * FROM BOOK")
+        res = self.db.query("SELECT * FROM BOOK ORDER BY title ASC")
         return res.fetchall()
 
     def update(self, updated_book: UpdateBookSchema) -> str | None:

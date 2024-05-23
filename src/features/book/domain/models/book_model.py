@@ -1,11 +1,5 @@
 from dataclasses import dataclass
 
-import textwrap
-
-
-def wrap(string: str):
-    return "\n".join(textwrap.wrap(string))
-
 
 @dataclass
 class Book:
@@ -19,7 +13,7 @@ class Book:
         return "Available" if self.student_id == None else "Borrowed"
 
     def to_tuple(self):
-        return (self.id, wrap(self.title), self.author, self.publisher)
+        return (self.id, self.title, self.author, self.publisher, self.status())
 
 
 @dataclass

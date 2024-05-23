@@ -98,6 +98,11 @@ def inject(dbClient: DatabaseService):
         book_get_all_usecase=book_get_all_usecase,
         book_delete_usecase=book_delete_usecase,
         book_create_usecase=book_create_usecase,
+        book_update_usecase=book_update_usecase,
+
+        student_get_all_usecase=student_get_all_usecase,
+        student_create_usecase = student_create_usecase,
+        student_update_usecase = student_update_usecase,
     )
 
     return (book_screen, student_view, record_view)
