@@ -1,204 +1,184 @@
 import tkinter as _tk
 import tkinter.ttk as _ttk
-
-from src.features.book.presentation.frames import (
-    BookViewFrame,
-    BookOperationsFrame,
-    MenuFrame,
-)
-
-from src.features.book.presentation.frames.student.student_operations_frame import (
-    StudentOperationsFrame,
-)
-
+import tkinter.messagebox as _msg
+import tkinter.simpledialog as _dialog
 
 from src.features.book.domain.usecases import (
     BookGetAllUseCase,
-    BookDeleteUseCase,
     BookCreateUseCase,
     BookUpdateUseCase,
+    BookDeleteUseCase,
 )
+from typing import Callable
+
 from src.features.book.domain.models.book_model import (
     Book,
     CreateBookSchema,
     UpdateBookSchema,
 )
 
-from src.features.student.domain.models.student_model import (
-    CreateStudentSchema,
-    UpdateStudentSchema,
+from src.features.book.presentation.old.frames.book_view_frame import BookViewFrame
+
+from src.features.book.presentation.old.frames.menu_frame import MenuFrame
+
+from src.features.book.presentation.old.frames.book_operations_frame import (
+    BookOperationsFrame,
 )
 
-
-from src.features.book.presentation.frames.student.student_view_frame import (
-    StudentViewFrame,
-)
-
-from src.features.student.domain.usecases import (
-    StudentGetAllUseCase,
-    StudentCreateUseCase,
-    StudentUpdateUseCase,
-)
+from dataclasses import dataclass
 
 
-class BookScreen(_tk.Tk):
+@dataclass
+class BookWrapper:
+
+    book_create_usecase: BookCreateUseCase
+    book_get_all_usecase: BookGetAllUseCase
+    book_update_usecase: BookUpdateUseCase
+    book_delete_usecase: BookDeleteUseCase
+
+    def run(self, master, reset_info: Callable[[], None]):  # type: ignore
+        return BookScreen(
+            master,
+            self.book_create_usecase,
+            self.book_get_all_usecase,
+            self.book_update_usecase,
+            self.book_delete_usecase,
+            reset_info,
+        )  # type: ignore
+
+
+class BookScreen(_ttk.Frame):
     def __init__(
         self,
-        book_get_all_usecase: BookGetAllUseCase,
-        book_delete_usecase: BookDeleteUseCase,
+        master,
         book_create_usecase: BookCreateUseCase,
+        book_get_all_usecase: BookGetAllUseCase,
         book_update_usecase: BookUpdateUseCase,
-        student_get_all_usecase: StudentGetAllUseCase,
-        student_create_usecase: StudentCreateUseCase,
-        student_update_usecase: StudentUpdateUseCase,
-    ):
-
-        super().__init__()
+        book_delete_usecase: BookDeleteUseCase,
+        reset_info: Callable[[], None],
+    ):  # type: ignore
+        super().__init__(master)
 
         self.book_create_usecase = book_create_usecase
         self.book_get_all_usecase = book_get_all_usecase
         self.book_update_usecase = book_update_usecase
         self.book_delete_usecase = book_delete_usecase
 
-        self.student_create_usecase = student_create_usecase
-        self.student_get_all_usecase = student_get_all_usecase
-        self.student_update_usecase = student_update_usecase
+        self.reset_info = reset_info
 
-        self.title("LibMan - Dashboard")
-        # self.geometry("900x600+100+100") widthxheight
-        self.geometry("1100x600+100+100")
-        self.resizable(False, False)
-        self.configure(background="white")
+        self.columnconfigure(0, weight=7)
+        self.columnconfigure(1, weight=1)
+
+        self.rowconfigure(0, weight=5)
+        self.rowconfigure(1, weight=1)
+
+        self.add_widgets()
 
         self.selected_books: list[Book] = []
 
-        self.create_widgets()
+        for widget in self.winfo_children():
+            widget.grid(padx=5, pady=5)
 
-        _ttk.Style(self).configure(
-            ".",
-            font=("Helvetica", 11),
-            background="white",
-        )
-
-    def create_widgets(self):
-
-        paddings = {"padx": 5, "pady": 2}
-
-        self.frame = _ttk.Frame(
-            self,
-        )
-
-        self.frame.grid(
+    def add_widgets(self):
+        self.add_table().grid(
             column=0,
             row=0,
             sticky=_tk.NSEW,
-            pady=20,
-            padx=20,
+        )
+        self.add_menu().grid(
+            column=1,
+            row=0,
+            rowspan=2,
+            sticky=_tk.NS,
+        )
+        self.add_operations().grid(
+            column=0,
+            row=1,
+            sticky=_tk.NSEW,
         )
 
-        self.frame.columnconfigure(0, weight=4)
-        self.frame.columnconfigure(1, weight=1)
+    def add_table(self) -> _tk.Widget:
 
-        _ttk.Label(
-            self.frame,
-            text="Welcome admin! ",
-            font=(("Helvetica", 15, "bold")),
-        ).grid(column=0, row=0, sticky=_tk.W, pady=(10, 20))
-        # Student View Frame
-        self.student_view_frame = StudentViewFrame(
-            self.frame,
-            student_get_all_usecase=self.student_get_all_usecase,
-        )
-
-        self.student_view_frame.grid(
-            column=0, row=1, columnspan=4, sticky=_tk.NSEW, **paddings
-        )
-
-        self.student_view_frame.grid_remove()
-
-        # Adding Book View Frame
         self.book_view_frame = BookViewFrame(
-            self.frame,
-            book_get_all_usecase=self.book_get_all_usecase,
+            self,
+            self.book_get_all_usecase,
         )
 
         self.book_view_frame.books_table.bind(
             "<<TreeviewSelect>>",
-            self.select_book,  # type: ignore
+            self.select_book,
         )
 
-        self.book_view_frame.grid(
-            column=0,
-            row=1,
-            columnspan=4,
-            sticky=_tk.NSEW,
-            **paddings,
-            # padx=20,
-            # pady=20,
-        )
+        return self.book_view_frame
+
+    def add_menu(self) -> _tk.Widget:
+
+        menu_frame = _ttk.Frame(self)
+
+        menu_frame.rowconfigure(0, weight=1)
+        menu_frame.columnconfigure(0, weight=1)
 
         self.menu_frame = MenuFrame(
-            self.frame,
-            on_toggle=self.toggle_table,
-            on_book_add=self.show_add_book_dialog,
-            on_book_update=self.update_book,
-            on_book_delete=self.delete_books,
-            on_student_add=self.on_student_add,
+            menu_frame,
+            on_book_add=self.on_add_book_click,
+            on_book_delete=self.on_book_delete,
+            on_book_update=self.on_book_update,
+            on_issue=self.on_book_issue,
         )
         self.menu_frame.grid(
-            column=4,
-            row=1,
-            rowspan=2,
-            **paddings,
-            sticky=_tk.NS,
-        )
-
-    def on_student_add(self):
-
-        self.menu_frame.student_add_btn["state"] = _tk.DISABLED
-
-        self.student_operations_frame = StudentOperationsFrame(
-            self.frame,
-            on_submit=self.handle_student_operations_submit,
-            on_cancel=self.destroy_student_operations,
-        )
-
-        self.student_operations_frame.grid(
             column=0,
-            row=2,
-            stick=_tk.NSEW,
-            padx=20,
-            pady=10,
+            row=0,
+            sticky=_tk.NS,
+            rowspan=4,
         )
 
-    def destroy_student_operations(self):
+        return menu_frame
 
-        self.student_operations_frame.destroy()
-        self.menu_frame.student_add_btn["state"] = _tk.NORMAL
-        self.menu_frame.student_update_btn["state"] = _tk.DISABLED
+    def add_operations(self) -> _tk.Widget:
+        operations_frame = _ttk.Frame(
+            self,
+            height=260,
+        )
 
-    def handle_student_operations_submit(
-        self,
-        student: CreateStudentSchema | UpdateStudentSchema,
-    ):
-        if type(student) == CreateStudentSchema:
-            self.student_create_usecase(student)
-        elif type(student) == UpdateStudentSchema:
-            self.student_update_usecase(student)
+        operations_frame.columnconfigure(0, weight=1)
+        operations_frame.rowconfigure(0, weight=1)
 
-        self.destroy_student_operations()
-        self.student_view_frame.refresh_table()
+        self.book_operations_frame = BookOperationsFrame(
+            operations_frame,
+            on_cancel=self.on_cancel,
+            on_submit=self.on_submit,
+        )
 
-    def toggle_table(self):
-        self.selected_books = []
+        return operations_frame
 
-        if self.book_view_frame.winfo_viewable():
-            self.book_view_frame.grid_remove()
-            self.student_view_frame.grid()
+    def on_add_book_click(self):
 
-        if self.student_view_frame.winfo_viewable():
-            self.student_view_frame.grid_remove()
-            self.book_view_frame.grid()
+        self.disable_buttons(
+            [self.menu_frame.add_book_btn, self.menu_frame.update_book_btn]
+        )
+
+        self.book_operations_frame.grid(
+            column=0,
+            row=0,
+            sticky=_tk.NSEW,
+        )
+
+    def on_cancel(self):
+
+        self.book_operations_frame.grid_forget()
+
+        self.enable_buttons(buttons=[self.menu_frame.add_book_btn])
+
+        if len(self.selected_books) == 1:
+            self.enable_buttons([self.menu_frame.update_book_btn])
+
+    def disable_buttons(self, buttons: list[_tk.Button | _ttk.Button]):
+        for button in buttons:
+            button["state"] = _tk.DISABLED
+
+    def enable_buttons(self, buttons: list[_tk.Button | _ttk.Button]):
+        for button in buttons:
+            button["state"] = _tk.NORMAL
 
     def select_book(self, event):
         self.selected_books = []
@@ -213,73 +193,125 @@ class BookScreen(_tk.Tk):
                     publisher=record[3],
                 )
             )
-        self.menu_frame.delete_book_btn["state"] = (
-            _tk.NORMAL if len(self.selected_books) >= 1 else _tk.DISABLED
+
+        if len(self.selected_books) >= 1:
+            self.enable_buttons([self.menu_frame.delete_book_btn])
+
+        if len(self.selected_books) == 1:
+            self.enable_buttons(
+                [self.menu_frame.issue_btn, self.menu_frame.update_book_btn]
+            )
+        else:
+            self.disable_buttons(
+                [self.menu_frame.issue_btn, self.menu_frame.update_book_btn]
+            )
+
+    def on_book_delete(self):
+        if _msg.askyesno(
+            "Are you sure?",
+            "Selected books will be deleted. This action cannot be undone.",
+        ):
+            for book in self.selected_books:
+                self.book_delete_usecase(book.id)
+
+        self.book_view_frame.refresh_table()
+
+        self.selected_books = []
+
+        self.reset_state()
+
+        _msg.showinfo("Delete success", "Books deleted successfully")
+
+    def reset_state(self):
+        self.reset_info()
+        self.enable_buttons(
+            [
+                self.menu_frame.add_book_btn,
+            ]
         )
 
         if len(self.selected_books) == 1:
-            self.menu_frame.issue_btn["state"] = _tk.NORMAL
-            self.menu_frame.update_btn["state"] = _tk.NORMAL
+            self.enable_buttons(
+                [
+                    self.menu_frame.update_book_btn,
+                    self.menu_frame.issue_btn,
+                ]
+            )
+
         else:
-            self.menu_frame.issue_btn["state"] = _tk.DISABLED
-            self.menu_frame.update_btn["state"] = _tk.DISABLED
+            self.disable_buttons(
+                [
+                    self.menu_frame.update_book_btn,
+                    self.menu_frame.issue_btn,
+                ]
+            )
 
-    def delete_books(self):
-        for book in self.selected_books:
-            self.book_delete_usecase(book.id)
+        if len(self.selected_books) >= 1:
+            self.enable_buttons([self.menu_frame.delete_book_btn])
+        else:
+            self.disable_buttons([self.menu_frame.delete_book_btn])
 
-        self.book_view_frame.refresh_table()
+    def on_submit(self, book: CreateBookSchema | UpdateBookSchema):
+        self.book_operations_frame.grid_remove()
 
-    def show_add_book_dialog(self):
-
-        self.menu_frame.add_book_btn["state"] = _tk.DISABLED
-
-        self.book_operations_frame = BookOperationsFrame(
-            self.frame,
-            on_cancel=self.destroy_book_operations_frame,
-            on_submit=self.handle_book_operations_submit,
-        )
-
-        self.book_operations_frame.grid(
-            column=0,
-            row=2,
-            stick=_tk.NSEW,
-            padx=20,
-            pady=10,
-        )
-
-    def handle_book_operations_submit(
-        self,
-        book: CreateBookSchema | UpdateBookSchema,
-    ):
         if type(book) == CreateBookSchema:
             self.book_create_usecase(book)
+            _msg.showinfo("Create success", "Book created successfully")
         elif type(book) == UpdateBookSchema:
             self.book_update_usecase(book)
+            _msg.showinfo("Update success", "Book updated successfully")
 
-        self.destroy_book_operations_frame()
         self.book_view_frame.refresh_table()
+        self.reset_state()
 
-    def destroy_book_operations_frame(self):
-        self.book_operations_frame.grid_forget()
-        self.menu_frame.add_book_btn["state"] = _tk.NORMAL
-        self.menu_frame.update_btn["state"] = _tk.NORMAL
-
-    def update_book(self):
-        self.menu_frame.add_book_btn["state"] = _tk.DISABLED
-        self.menu_frame.update_btn["state"] = _tk.DISABLED
-
-        self.book_operations_frame = BookOperationsFrame(
-            self.frame,
-            book=self.selected_books[0],
-            on_cancel=self.destroy_book_operations_frame,
-            on_submit=self.handle_book_operations_submit,
-        )
-
+    def on_book_update(self):
+        self.book_operations_frame.book = self.selected_books[0]
+        self.book_operations_frame.add_book()
         self.book_operations_frame.grid(
             column=0,
-            row=2,
-            stick=_tk.NSEW,
-            padx=20,
-            pady=10,
+            row=0,
+            sticky=_tk.NSEW,
         )
+
+    def on_book_issue(self):
+        # print(_("Student Details", "Enter Student Id: "))
+        print(CustomDialog().result)
+        # print(_dialog.askinteger("Enter StudentId: ", "StudentId "))
+
+
+class CustomDialog(_tk.Toplevel):
+    def __init__(self, master):
+        super().__init__(master)
+        self.geometry("500x300+200+200")
+        self.resizable(False, False)
+
+        self.result = None
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.add_widgets()
+
+        _ttk.Style(self).configure(".", background="white")
+
+    def add_widgets(self):
+        self.base_frame = _tk.Frame(
+            self,
+            highlightbackground="blue",
+            highlightthickness=4,
+        ).grid(
+            column=0,
+            row=0,
+            sticky=_tk.NSEW,
+        )
+
+        self._button_box().grid(column=0, row=0, sticky=_tk.EW)
+
+    def _button_box(self) -> _tk.Widget:
+        frame = _tk.Frame(
+            self.base_frame,
+            highlightbackground="blue",
+            highlightthickness=4,
+        )
+
+        return frame

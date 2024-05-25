@@ -6,6 +6,9 @@ from src.features.student.data.sources.local.local_student_source import (
     LocalStudentDataSource,
 )
 
+import tkinter as _tk
+import tkinter.ttk as _ttk
+
 
 # repositories
 from src.features.book.data.repository.book_repository_impl import BookRepositoryImpl
@@ -38,10 +41,15 @@ from src.features.student.domain.usecases import (
 # views
 # from src.features.record.presentation.record_view import RecordView
 
-from src.features.book.presentation.book_screen import BookScreen
+from src.features.book.presentation.book_screen import BookWrapper
+from src.features.student.presentation.student_screen import (
+    StudentWrapper,
+)
 
 
-def inject(dbClient: DatabaseService):
+def inject(
+    dbClient: DatabaseService,
+) -> tuple[BookWrapper, StudentWrapper]:
     ## datasources
     book_source = LocalBookSource(dbClient)
     student_source = LocalStudentDataSource(dbClient)
@@ -66,18 +74,14 @@ def inject(dbClient: DatabaseService):
     update_student_record_usecase = UpdateStudentRecordUseCase(student_repo)
     book_update_record_usecase = BookUpdateRecordUseCase(book_repo)
 
-
-
-
-    book_screen = BookScreen(
-        book_get_all_usecase=book_get_all_usecase,
-        book_delete_usecase=book_delete_usecase,
-        book_create_usecase=book_create_usecase,
-        book_update_usecase=book_update_usecase,
-
-        student_get_all_usecase=student_get_all_usecase,
-        student_create_usecase = student_create_usecase,
-        student_update_usecase = student_update_usecase,
+    return (
+        BookWrapper(
+            book_create_usecase=book_create_usecase,
+            book_get_all_usecase=book_get_all_usecase,
+            book_update_usecase=book_update_usecase,
+            book_delete_usecase=book_delete_usecase,
+        ),
+        StudentWrapper(
+            student_get_all_usecase,
+        ),
     )
-
-    return (book_screen)

@@ -27,73 +27,110 @@ class BookOperationsFrame(_ttk.Frame):
         self.publisher_var = _tk.StringVar(self, book.publisher if book != None else "")
 
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.columnconfigure(2, weight=2)
+        self.columnconfigure(1, weight=4)
+        self.rowconfigure(0, weight=1)
+        # self.columnconfigure(2, weight=2)
 
-        _ttk.Label(self, text="Add Book:- ").grid(
+        self.config(padding=(10, 40))
+
+        _ttk.Label(
+            self,
+            text="Add Book:- ",
+            font=("Arial", 14, "bold"),
+        ).grid(
             column=0,
             row=0,
+            sticky=_tk.NE,
         )
+
+        input_frame = _ttk.Frame(
+            self,
+            # highlightbackground="blue",
+            # highlightthickness=4,
+        )
+        input_frame.grid(
+            column=1,
+            row=0,
+            sticky=_tk.NSEW,
+        )
+
+        input_frame.columnconfigure(0, weight=2)
+        input_frame.columnconfigure(1, weight=3)
 
         # Title
-        _ttk.Label(self, text="Enter Title: ").grid(
-            column=1,
-            row=1,
+        _ttk.Label(input_frame, text="Enter Title: ").grid(
+            column=0,
+            row=0,
             pady=5,
-            sticky=_tk.W,
+            sticky=_tk.E,
         )
-        _ttk.Entry(self, textvariable=self.title_var).grid(
-            column=2,
-            row=1,
+
+        _ttk.Entry(
+            input_frame,
+            textvariable=self.title_var,
+            width=30,
+        ).grid(
+            column=1,
+            row=0,
             columnspan=2,
             sticky=_tk.EW,
         )
 
-        _ttk.Label(self, text="Enter Author: ").grid(
-            column=1,
-            row=2,
-            sticky=_tk.W,
+        _ttk.Label(input_frame, text="Enter Author: ").grid(
+            column=0,
+            row=1,
+            sticky=_tk.E,
         )
         _ttk.Entry(
-            self,
+            input_frame,
             textvariable=self.author_var,
         ).grid(
-            column=2,
+            column=1,
             columnspan=2,
-            row=2,
+            row=1,
             sticky=_tk.EW,
         )
-        _ttk.Label(self, text="Enter Publisher: ").grid(
-            column=1,
-            row=3,
-            sticky=_tk.W,
+        _ttk.Label(input_frame, text="Enter Publisher: ").grid(
+            column=0,
+            row=2,
+            sticky=_tk.E,
         )
-        _ttk.Entry(self, textvariable=self.publisher_var).grid(
-            column=2,
+        _ttk.Entry(input_frame, textvariable=self.publisher_var).grid(
+            column=1,
             columnspan=2,
-            row=3,
+            row=2,
             sticky=_tk.EW,
         )
 
         _ttk.Button(
-            self,
+            input_frame,
             text="Cancel",
             command=lambda: self.on_cancel() if self.on_cancel != None else None,
+            width=20,
         ).grid(
-            column=3,
-            row=4,
-            sticky=_tk.EW,
+            column=1,
+            row=3,
+            sticky=_tk.E,
         )
-
-        _ttk.Button(self, text="Submit", command=self.handle_submit).grid(
-            column=4,
-            row=4,
-            sticky=_tk.EW,
+        _ttk.Button(
+            input_frame,
+            text="Submit",
+            width=20,
+            command=self.handle_submit,
+        ).grid(
+            column=2,
+            row=3,
+            sticky=_tk.W,
         )
 
         for widget in self.winfo_children():
             widget.grid(
                 padx=5,
+                pady=5,
+            )
+        for widget in input_frame.winfo_children():
+            widget.grid(
+                padx=20,
                 pady=10,
             )
 
@@ -126,3 +163,12 @@ class BookOperationsFrame(_ttk.Frame):
                     ),
                 )
             )
+
+    def add_book(
+        self,
+    ):
+        if self.book == None:
+            return
+        self.title_var.set(self.book.title)
+        self.author_var.set(self.book.author)
+        self.publisher_var.set(self.book.publisher)

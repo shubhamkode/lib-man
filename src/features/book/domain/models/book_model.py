@@ -13,7 +13,12 @@ class Book:
         return "Available" if self.student_id == None else "Borrowed"
 
     def to_tuple(self):
-        return (self.id, self.title, self.author, self.publisher, self.status())
+        return (
+            self.id,
+            self.title,
+            self.author,
+            self.publisher,
+        )
 
 
 @dataclass
