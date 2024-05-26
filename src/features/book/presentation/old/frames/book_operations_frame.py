@@ -35,7 +35,7 @@ class BookOperationsFrame(_ttk.Frame):
 
         _ttk.Label(
             self,
-            text="Add Book:- ",
+            text=f"""{"Add" if self.book == None else "Update"} Book:- """,
             font=("Arial", 14, "bold"),
         ).grid(
             column=0,

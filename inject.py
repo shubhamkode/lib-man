@@ -46,6 +46,8 @@ from src.features.student.presentation.student_screen import (
     StudentWrapper,
 )
 
+from src.features.book.presentation.frames.book_dialog import BookIssueDialogWrapper
+
 
 def inject(
     dbClient: DatabaseService,
@@ -74,14 +76,26 @@ def inject(
     update_student_record_usecase = UpdateStudentRecordUseCase(student_repo)
     book_update_record_usecase = BookUpdateRecordUseCase(book_repo)
 
+    book_issue_dialog_wrapper = BookIssueDialogWrapper(
+        student_get_usecase=student_get_usecase,
+        student_update_record_usecase=update_student_record_usecase,
+        book_update_record_usecase=book_update_record_usecase,
+    )
+
     return (
         BookWrapper(
             book_create_usecase=book_create_usecase,
             book_get_all_usecase=book_get_all_usecase,
             book_update_usecase=book_update_usecase,
             book_delete_usecase=book_delete_usecase,
+            book_issue_dialog_wrapper=book_issue_dialog_wrapper,
         ),
         StudentWrapper(
-            student_get_all_usecase,
+            student_create_usecase=student_create_usecase,
+            student_get_all_usecase=student_get_all_usecase,
+            student_update_usecase=student_update_usecase,
+            student_delete_usecase=student_delete_usecase,
+            student_update_record_usecase=update_student_record_usecase,
+            book_update_record_usecase=book_update_record_usecase,
         ),
     )

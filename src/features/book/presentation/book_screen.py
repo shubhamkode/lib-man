@@ -17,6 +17,7 @@ from src.features.book.domain.models.book_model import (
     UpdateBookSchema,
 )
 
+
 from src.features.book.presentation.old.frames.book_view_frame import BookViewFrame
 
 from src.features.book.presentation.old.frames.menu_frame import MenuFrame
@@ -24,6 +25,8 @@ from src.features.book.presentation.old.frames.menu_frame import MenuFrame
 from src.features.book.presentation.old.frames.book_operations_frame import (
     BookOperationsFrame,
 )
+
+from .frames.book_dialog import BookIssueDialogWrapper
 
 from dataclasses import dataclass
 
@@ -35,15 +38,16 @@ class BookWrapper:
     book_get_all_usecase: BookGetAllUseCase
     book_update_usecase: BookUpdateUseCase
     book_delete_usecase: BookDeleteUseCase
+    book_issue_dialog_wrapper: BookIssueDialogWrapper
 
-    def run(self, master, reset_info: Callable[[], None]):  # type: ignore
+    def run(self, master):  # type: ignore
         return BookScreen(
             master,
             self.book_create_usecase,
             self.book_get_all_usecase,
             self.book_update_usecase,
             self.book_delete_usecase,
-            reset_info,
+            self.book_issue_dialog_wrapper,
         )  # type: ignore
 
 
@@ -55,7 +59,7 @@ class BookScreen(_ttk.Frame):
         book_get_all_usecase: BookGetAllUseCase,
         book_update_usecase: BookUpdateUseCase,
         book_delete_usecase: BookDeleteUseCase,
-        reset_info: Callable[[], None],
+        book_issue_dialog_wrapper: BookIssueDialogWrapper,
     ):  # type: ignore
         super().__init__(master)
 
@@ -63,8 +67,7 @@ class BookScreen(_ttk.Frame):
         self.book_get_all_usecase = book_get_all_usecase
         self.book_update_usecase = book_update_usecase
         self.book_delete_usecase = book_delete_usecase
-
-        self.reset_info = reset_info
+        self.book_issue_dialog_wrapper = book_issue_dialog_wrapper
 
         self.columnconfigure(0, weight=7)
         self.columnconfigure(1, weight=1)
@@ -191,6 +194,7 @@ class BookScreen(_ttk.Frame):
                     title=record[1],
                     author=record[2],
                     publisher=record[3],
+                    student_id=record[4],
                 )
             )
 
@@ -198,13 +202,17 @@ class BookScreen(_ttk.Frame):
             self.enable_buttons([self.menu_frame.delete_book_btn])
 
         if len(self.selected_books) == 1:
-            self.enable_buttons(
-                [self.menu_frame.issue_btn, self.menu_frame.update_book_btn]
-            )
+            self.enable_buttons([self.menu_frame.update_book_btn])
+            if self.selected_books[0].student_id == "AVAILABLE":
+                self.enable_buttons([self.menu_frame.issue_btn])
+            else:
+                self.disable_buttons([self.menu_frame.issue_btn])
         else:
             self.disable_buttons(
                 [self.menu_frame.issue_btn, self.menu_frame.update_book_btn]
             )
+
+        return "break"
 
     def on_book_delete(self):
         if _msg.askyesno(
@@ -223,7 +231,7 @@ class BookScreen(_ttk.Frame):
         _msg.showinfo("Delete success", "Books deleted successfully")
 
     def reset_state(self):
-        self.reset_info()
+        self.event_generate("<<ResetInfo>>")
         self.enable_buttons(
             [
                 self.menu_frame.add_book_btn,
@@ -274,44 +282,7 @@ class BookScreen(_ttk.Frame):
         )
 
     def on_book_issue(self):
-        # print(_("Student Details", "Enter Student Id: "))
-        print(CustomDialog().result)
-        # print(_dialog.askinteger("Enter StudentId: ", "StudentId "))
-
-
-class CustomDialog(_tk.Toplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.geometry("500x300+200+200")
-        self.resizable(False, False)
-
-        self.result = None
-
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
-
-        self.add_widgets()
-
-        _ttk.Style(self).configure(".", background="white")
-
-    def add_widgets(self):
-        self.base_frame = _tk.Frame(
+        self.book_issue_dialog_wrapper.run(
             self,
-            highlightbackground="blue",
-            highlightthickness=4,
-        ).grid(
-            column=0,
-            row=0,
-            sticky=_tk.NSEW,
+            self.selected_books[0].id,
         )
-
-        self._button_box().grid(column=0, row=0, sticky=_tk.EW)
-
-    def _button_box(self) -> _tk.Widget:
-        frame = _tk.Frame(
-            self.base_frame,
-            highlightbackground="blue",
-            highlightthickness=4,
-        )
-
-        return frame

@@ -26,6 +26,7 @@ class BookViewFrame(_ttk.Frame):
                 "title",
                 "author",
                 "publisher",
+                "status",
             ),
             show="headings",
         )
@@ -66,10 +67,15 @@ class BookViewFrame(_ttk.Frame):
             stretch=False,
             anchor=_tk.CENTER,
         )
+        self.books_table.heading("status", text="Status")
+        self.books_table.column(
+            "status",
+            width=150,
+            stretch=False,
+            anchor=_tk.CENTER,
+        )
 
-        self.books = self.book_get_all_usecase()
-
-        for book in filter(lambda book: book.student_id == None, self.books):
+        for book in self.book_get_all_usecase():
             self.books_table.insert(
                 "",
                 _tk.END,
@@ -83,7 +89,7 @@ class BookViewFrame(_ttk.Frame):
         )
 
         self.books_table.configure(  # type: ignore
-            yscroll=scrollbar.set,
+            yscrollcommand=scrollbar.set,
         )
         scrollbar.grid(
             column=1,

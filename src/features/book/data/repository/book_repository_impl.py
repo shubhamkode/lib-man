@@ -18,6 +18,7 @@ class BookRepositoryImpl(AbstractBookRepository):
                 title=db_book[1],
                 author=db_book[3],
                 publisher=db_book[2],
+                student_id=db_book[4],
             )
             for db_book in db_books
         ]
@@ -28,13 +29,13 @@ class BookRepositoryImpl(AbstractBookRepository):
     def book_get(self, id: str) -> Book | None:
         db_book = self.source.get(id)
 
+
         return (
             Book(
                 id=db_book[0],
                 title=db_book[1],
                 author=db_book[3],
                 publisher=db_book[2],
-                student_id=db_book[4],
             )
             if db_book != None
             else None

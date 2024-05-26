@@ -9,8 +9,9 @@ class Book:
     publisher: str
     student_id: str | None = None
 
+    @property
     def status(self) -> str:
-        return "Available" if self.student_id == None else "Borrowed"
+        return "AVAILABLE" if self.student_id == None else "BORROWED"
 
     def to_tuple(self):
         return (
@@ -18,6 +19,7 @@ class Book:
             self.title,
             self.author,
             self.publisher,
+            self.status,
         )
 
 

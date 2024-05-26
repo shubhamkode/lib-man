@@ -12,6 +12,15 @@ from src.features.student.presentation.student_screen import (
 )
 
 
+# from dataclasses import dataclass
+
+# @dataclass
+# class HomeScreenWrapper:
+#     def run(self) -> HomeScreen(
+#             self
+#     ):
+
+
 class LibMan(_tk.Tk):
     def __init__(
         self,
@@ -36,7 +45,14 @@ class LibMan(_tk.Tk):
         self.books_len_info = _tk.IntVar(self, len(books))
         self.borrowed_len_info = _tk.IntVar(
             self,
-            len(list(filter(lambda book: book.student_id != None, books))),
+            len(
+                list(
+                    filter(
+                        lambda book: book.student_id != None,
+                        books,
+                    ),
+                )
+            ),
         )
 
         self.data = {
@@ -46,10 +62,13 @@ class LibMan(_tk.Tk):
         }
 
         self.screens = (
-            wrappers[0].run(self, self.reset_info),
+            wrappers[0].run(self),
             wrappers[1].run(self),
             # wrappers[1].run(self, self.reset_info),
         )  # type ignore
+
+        self.bind_all("<<RefreshTable>>", self.refresh_table)
+        self.bind_all("<<ResetInfo>>", self.reset_info)
 
         self.add_widgets()
 
@@ -63,6 +82,12 @@ class LibMan(_tk.Tk):
         self.rowconfigure(1, weight=25)
 
         self.columnconfigure(0, weight=1)
+
+    def refresh_table(self, event=None):
+        self.screens[0].book_view_frame.refresh_table()
+        self.screens[1].student_table_frame.refresh_table()
+
+        return "break"
 
     def add_widgets(self):
 
@@ -195,12 +220,14 @@ class LibMan(_tk.Tk):
                 sticky=_tk.NSEW,
             )
 
-    def reset_info(self):
+    def reset_info(self, event=None):
         books = self.wrappers[0].book_get_all_usecase()
         students = self.wrappers[1].student_get_all_usecase()
 
         self.students_len_info.set(len(students))
         self.books_len_info.set(len(books))
         self.borrowed_len_info.set(
-           len(list(filter(lambda book: book.student_id != None, books)))
+            len(list(filter(lambda book: book.student_id != None, books)))
         )
+
+        return "break"
