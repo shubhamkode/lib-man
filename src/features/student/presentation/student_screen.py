@@ -91,11 +91,6 @@ class StudentScreen(_ttk.Frame):
             rowspan=2,
             sticky=_tk.NS,
         )
-        self.add_operations().grid(
-            column=0,
-            row=1,
-            sticky=_tk.NSEW,
-        )
 
     def add_table(self) -> _tk.Widget:
 
@@ -123,22 +118,17 @@ class StudentScreen(_ttk.Frame):
 
         return self.student_menu_frame
 
-    def add_operations(self) -> _tk.Widget:
-        operations_frame = _ttk.Frame(
-            self,
-            height=260,
-        )
-
-        operations_frame.columnconfigure(0, weight=1)
-        operations_frame.rowconfigure(0, weight=1)
+    def add_operations(self, student: Student | None = None) -> _tk.Widget:
 
         self.student_operations_frame = StudentOperationsFrame(
-            operations_frame,
+            self,
             on_cancel=self.on_operations_cancel,
             on_submit=self.on_operations_submit,
         )
+        self.student_operations_frame.student = student
+        self.student_operations_frame.update_student()
 
-        return operations_frame
+        return self.student_operations_frame
 
     def on_return_click(self):
         if self.selected_students[0].book_id == None:
@@ -163,14 +153,19 @@ class StudentScreen(_ttk.Frame):
         self.disable_buttons(
             [self.student_menu_frame.add_btn, self.student_menu_frame.update_btn]
         )
-        self.student_operations_frame.grid(column=0, row=0, sticky=_tk.NSEW)
+        self.add_operations().grid(
+            column=0,
+            row=1,
+            sticky=_tk.NSEW,
+        )
 
     def on_student_update_click(self):
         self.student_operations_frame.student = self.selected_students[0]
         self.student_operations_frame.update_student()
-        self.student_operations_frame.grid(
+
+        self.add_operations(self.selected_students[0]).grid(
             column=0,
-            row=0,
+            row=1,
             sticky=_tk.NSEW,
         )
 

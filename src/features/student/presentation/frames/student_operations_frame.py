@@ -1,7 +1,9 @@
 import tkinter as _tk
 import tkinter.ttk as _ttk
+import tkinter.messagebox as _msg
 
 from typing import Callable
+from dataclasses import dataclass
 
 from src.features.student.domain.models.student_model import (
     Student,
@@ -111,9 +113,28 @@ class StudentOperationsFrame(_ttk.Frame):
                 pady=10,
             )
 
+    def validate_contact(self) -> bool:
+        contact = self.contact_var.get()
+
+        try:
+            if self.name_var.get() == "":
+                raise StudentException("Name Required")
+            if any(ch.isalpha() for ch in contact):
+                raise StudentException("Contact must only have numbers")
+            if not len(contact) == 10:
+                raise StudentException("Contact must be of 10 digits only")
+        except StudentException as err:
+            _msg.showerror("Error", err.message)
+            return False
+        else:
+            return True
+
     def handle_submit(self):
 
         if self.on_submit == None:
+            return
+
+        if not self.validate_contact():
             return
 
         if self.student == None:
@@ -141,3 +162,8 @@ class StudentOperationsFrame(_ttk.Frame):
 
         self.name_var.set(self.student.name)
         self.contact_var.set(self.student.phone_no)
+
+
+@dataclass
+class StudentException(Exception):
+    message: str

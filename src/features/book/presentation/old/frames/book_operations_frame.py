@@ -1,11 +1,14 @@
 import tkinter.ttk as _ttk
 import tkinter as _tk
+import tkinter.messagebox as _msg
 from typing import Callable
 from src.features.book.domain.models.book_model import (
     Book,
     CreateBookSchema,
     UpdateBookSchema,
 )
+
+from dataclasses import dataclass
 
 
 class BookOperationsFrame(_ttk.Frame):
@@ -31,7 +34,7 @@ class BookOperationsFrame(_ttk.Frame):
         self.rowconfigure(0, weight=1)
         # self.columnconfigure(2, weight=2)
 
-        self.config(padding=(10, 40))
+        self.config(padding=(10, 10))
 
         _ttk.Label(
             self,
@@ -45,8 +48,6 @@ class BookOperationsFrame(_ttk.Frame):
 
         input_frame = _ttk.Frame(
             self,
-            # highlightbackground="blue",
-            # highlightthickness=4,
         )
         input_frame.grid(
             column=1,
@@ -134,9 +135,33 @@ class BookOperationsFrame(_ttk.Frame):
                 pady=10,
             )
 
+    def validate_book(self) -> bool:
+        title = self.title_var.get()
+        author = self.author_var.get()
+        publisher = self.publisher_var.get()
+
+        try:
+            if title == "":
+                raise BookException("Title cannot be empty")
+
+            if any(ch.isdigit() for ch in author):
+                raise BookException("Author name cannot have a number")
+
+            if any(ch.isdigit() for ch in publisher):
+                raise BookException("Publisher name cannot have a number")
+
+        except BookException as err:
+            _msg.showerror("Error", err.message)
+            return False
+        else:
+            return True
+
     def handle_submit(self):
 
         if self.on_submit == None:
+            return
+
+        if not self.validate_book():
             return
 
         if self.book == None:
@@ -172,3 +197,8 @@ class BookOperationsFrame(_ttk.Frame):
         self.title_var.set(self.book.title)
         self.author_var.set(self.book.author)
         self.publisher_var.set(self.book.publisher)
+
+
+@dataclass
+class BookException(Exception):
+    message: str

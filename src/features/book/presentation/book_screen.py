@@ -72,7 +72,7 @@ class BookScreen(_ttk.Frame):
         self.columnconfigure(0, weight=7)
         self.columnconfigure(1, weight=1)
 
-        self.rowconfigure(0, weight=5)
+        self.rowconfigure(0, weight=10)
         self.rowconfigure(1, weight=1)
 
         self.add_widgets()
@@ -93,11 +93,6 @@ class BookScreen(_ttk.Frame):
             row=0,
             rowspan=2,
             sticky=_tk.NS,
-        )
-        self.add_operations().grid(
-            column=0,
-            row=1,
-            sticky=_tk.NSEW,
         )
 
     def add_table(self) -> _tk.Widget:
@@ -138,21 +133,13 @@ class BookScreen(_ttk.Frame):
         return menu_frame
 
     def add_operations(self) -> _tk.Widget:
-        operations_frame = _ttk.Frame(
-            self,
-            height=260,
-        )
-
-        operations_frame.columnconfigure(0, weight=1)
-        operations_frame.rowconfigure(0, weight=1)
 
         self.book_operations_frame = BookOperationsFrame(
-            operations_frame,
+            self,
             on_cancel=self.on_cancel,
             on_submit=self.on_submit,
         )
-
-        return operations_frame
+        return self.book_operations_frame
 
     def on_add_book_click(self):
 
@@ -160,9 +147,9 @@ class BookScreen(_ttk.Frame):
             [self.menu_frame.add_book_btn, self.menu_frame.update_book_btn]
         )
 
-        self.book_operations_frame.grid(
+        self.add_operations().grid(
             column=0,
-            row=0,
+            row=1,
             sticky=_tk.NSEW,
         )
 
@@ -277,7 +264,7 @@ class BookScreen(_ttk.Frame):
         self.book_operations_frame.add_book()
         self.book_operations_frame.grid(
             column=0,
-            row=0,
+            row=1,
             sticky=_tk.NSEW,
         )
 

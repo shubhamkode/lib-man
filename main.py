@@ -10,8 +10,6 @@ DATABASE_NAME = "libman.sqlite"
 DATABASE_SQL_FILE = "./db.sql"
 
 
-from src.shared.screens.home.home_screen import LibMan
-
 
 def runApp():
 
@@ -19,9 +17,9 @@ def runApp():
     dbClient = SQLiteDatabaseService(DATABASE_NAME)
     dbClient.setup(get_database_queries(DATABASE_SQL_FILE))
 
-    wrappers = inject(dbClient)
+    main_app_wrapper = inject(dbClient)
 
-    LibMan(wrappers).mainloop()
+    main_app_wrapper.run().mainloop()
 
 
 if __name__ == "__main__":

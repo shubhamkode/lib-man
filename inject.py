@@ -38,8 +38,12 @@ from src.features.student.domain.usecases import (
 )
 
 
-# views
-# from src.features.record.presentation.record_view import RecordView
+from src.core.main_app import MainAppWrapper
+
+from src.features.auth import AuthScreenWrapper
+
+
+from src.shared.screens.home.home_screen import HomeScreenWrapper
 
 from src.features.book.presentation.book_screen import BookWrapper
 from src.features.student.presentation.student_screen import (
@@ -51,7 +55,7 @@ from src.features.book.presentation.frames.book_dialog import BookIssueDialogWra
 
 def inject(
     dbClient: DatabaseService,
-) -> tuple[BookWrapper, StudentWrapper]:
+) -> MainAppWrapper:
     ## datasources
     book_source = LocalBookSource(dbClient)
     student_source = LocalStudentDataSource(dbClient)
@@ -82,20 +86,31 @@ def inject(
         book_update_record_usecase=book_update_record_usecase,
     )
 
-    return (
-        BookWrapper(
-            book_create_usecase=book_create_usecase,
-            book_get_all_usecase=book_get_all_usecase,
-            book_update_usecase=book_update_usecase,
-            book_delete_usecase=book_delete_usecase,
-            book_issue_dialog_wrapper=book_issue_dialog_wrapper,
-        ),
-        StudentWrapper(
-            student_create_usecase=student_create_usecase,
-            student_get_all_usecase=student_get_all_usecase,
-            student_update_usecase=student_update_usecase,
-            student_delete_usecase=student_delete_usecase,
-            student_update_record_usecase=update_student_record_usecase,
-            book_update_record_usecase=book_update_record_usecase,
-        ),
+    book_wrapper = BookWrapper(
+        book_create_usecase=book_create_usecase,
+        book_get_all_usecase=book_get_all_usecase,
+        book_update_usecase=book_update_usecase,
+        book_delete_usecase=book_delete_usecase,
+        book_issue_dialog_wrapper=book_issue_dialog_wrapper,
     )
+    student_wrapper = StudentWrapper(
+        student_create_usecase=student_create_usecase,
+        student_get_all_usecase=student_get_all_usecase,
+        student_update_usecase=student_update_usecase,
+        student_delete_usecase=student_delete_usecase,
+        student_update_record_usecase=update_student_record_usecase,
+        book_update_record_usecase=book_update_record_usecase,
+    )
+
+    home_screen_wrapper = HomeScreenWrapper(
+        wrappers=(book_wrapper, student_wrapper),
+    )
+
+    auth_screen_wrapper = AuthScreenWrapper()
+
+    main_app_wrapper = MainAppWrapper(
+        home_screen_wrapper,
+        auth_screen_wrapper,
+    )
+
+    return main_app_wrapper

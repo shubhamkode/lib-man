@@ -12,33 +12,35 @@ from src.features.student.presentation.student_screen import (
 )
 
 
-# from dataclasses import dataclass
-
-# @dataclass
-# class HomeScreenWrapper:
-#     def run(self) -> HomeScreen(
-#             self
-#     ):
+from dataclasses import dataclass
 
 
-class LibMan(_tk.Tk):
+@dataclass
+class HomeScreenWrapper:
+    wrappers: tuple[BookWrapper, StudentWrapper]
+
+    def run(self, master):
+        return HomeScreen(master, self)
+
+
+class HomeScreen(_tk.Frame):
     def __init__(
         self,
-        wrappers: tuple[BookWrapper, StudentWrapper],
+        master,
+        wrapper: HomeScreenWrapper,
+        # wrappers: tuple[BookWrapper, StudentWrapper],
     ):
-        super().__init__()
+        super().__init__(master)
 
-        self.geometry("1400x800+100+100")
-        self.resizable(False, False)
         self.config(
             background="white",
             padx=15,
             pady=15,
         )
-        self.wrappers = wrappers
+        self.wrappers = wrapper.wrappers
 
-        books = wrappers[0].book_get_all_usecase()
-        students = wrappers[1].student_get_all_usecase()
+        books = self.wrappers[0].book_get_all_usecase()
+        students = self.wrappers[1].student_get_all_usecase()
 
         self.students_len_info = _tk.IntVar(self, len(students))
 
@@ -62,13 +64,19 @@ class LibMan(_tk.Tk):
         }
 
         self.screens = (
-            wrappers[0].run(self),
-            wrappers[1].run(self),
+            self.wrappers[0].run(self),
+            self.wrappers[1].run(self),
             # wrappers[1].run(self, self.reset_info),
         )  # type ignore
 
-        self.bind_all("<<RefreshTable>>", self.refresh_table)
-        self.bind_all("<<ResetInfo>>", self.reset_info)
+        self.bind_all(
+            "<<RefreshTable>>",
+            self.refresh_table,
+        )
+        self.bind_all(
+            "<<ResetInfo>>",
+            self.reset_info,
+        )
 
         self.add_widgets()
 
