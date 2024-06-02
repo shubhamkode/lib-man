@@ -1,5 +1,5 @@
 .env
 *.sqlite
 *.log
-clean.sh
+*.sh
 __pycache__/
