@@ -3,9 +3,7 @@ import tkinter.ttk as _ttk
 import tkinter.messagebox as _msg
 import re
 
-from dataclasses import dataclass
-
-from src.utils.exceptions import AuthException
+from src.utils import AuthException
 
 
 class AuthScreenWrapper:
@@ -24,29 +22,48 @@ class AuthScreen(_ttk.Frame):
         self.email_var = _tk.StringVar()
         self.password_var = _tk.StringVar()
 
-        _ttk.Label(self, text="Email").grid(
+
+        _ttk.Label(self, text="Welcome Back!", font=("", 16, "bold")).grid(
             column=0,
             row=0,
+            pady=(0, 16),
+            sticky=_tk.W,
+        )
+
+        _ttk.Label(self, text="Email").grid(
+            column=0,
+            row=1,
             sticky=_tk.W,
         )
         _ttk.Entry(
             self,
-            font=("", 14),
+            font=("", 12),
+            style="Auth.TEntry",
             textvariable=self.email_var,
-        ).grid(column=0, row=1, pady=(2, 10))
-        _ttk.Label(self, text="Password").grid(
+        ).grid(
             column=0,
             row=2,
+            pady=(4, 12),
+            sticky=_tk.EW,
+        )
+        _ttk.Label(
+            self,
+            text="Password",
+        ).grid(
+            column=0,
+            row=3,
             sticky=_tk.W,
         )
         _ttk.Entry(
             self,
-            font=("", 14),
+            font=("", 12),
+            style="Auth.TEntry",
             textvariable=self.password_var,
         ).grid(
             column=0,
             row=4,
-            pady=(2, 10),
+            pady=(4, 12),
+            sticky=_tk.EW,
         )
 
         login_button = _ttk.Button(
@@ -54,12 +71,20 @@ class AuthScreen(_ttk.Frame):
             text="Submit",
             command=self.handle_submit,
         )
-        login_button.grid(column=0, row=5, ipady=4, pady=(10, 0), sticky=_tk.EW)
+        login_button.grid(
+            column=0,
+            row=5,
+            ipady=4,
+            pady=(4, 0),
+            sticky=_tk.EW,
+        )
 
         login_button.bind(
             "<Return>",
             self.handle_submit,
         )
+
+        _ttk.Style(self).configure("Auth.TEntry", padding="6 4 4 4")
 
     # def validate_
 

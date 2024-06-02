@@ -1,109 +1,57 @@
 # database Service
 from src.shared.database_service import DatabaseService
 
-from src.features.book.data.sources.local.local_book_source import LocalBookSource
-from src.features.student.data.sources.local.local_student_source import (
-    LocalStudentDataSource,
-)
-
-import tkinter as _tk
-import tkinter.ttk as _ttk
-
 
 # repositories
-from src.features.book.data.repository.book_repository_impl import BookRepositoryImpl
-from src.features.student.data.repositories.student_repo_impl import (
-    StudentRepositoryImpl,
-)
+from src.features.book.controller import BookRepoImpl
 
-
-# usecases
-from src.features.book.domain.usecases import (
-    BookCreateUseCase,
-    BookGetAllUseCase,
-    BookGetUseCase,
-    BookUpdateUseCase,
-    BookDeleteUseCase,
-    BookUpdateRecordUseCase,
-)
-
-
-from src.features.student.domain.usecases import (
-    StudentCreateUseCase,
-    StudentGetAllUseCase,
-    StudentGetUseCase,
-    StudentUpdateUseCase,
-    StudentDeleteUseCase,
-    UpdateStudentRecordUseCase,
-)
+from src.features.student.controller import StudentRepoImpl
 
 
 from src.core.main_app import MainAppWrapper
-
 from src.features.auth import AuthScreenWrapper
-
-
 from src.shared.screens.home.home_screen import HomeScreenWrapper
+from src.features.book.view import BookWrapper
 
-from src.features.book.presentation.book_screen import BookWrapper
-from src.features.student.presentation.student_screen import (
+from src.features.student.view.student_screen import (
     StudentWrapper,
 )
+from src.features.book.view.frames.book_dialog import BookIssueDialogWrapper
 
-from src.features.book.presentation.frames.book_dialog import BookIssueDialogWrapper
+from src.features.analytics.controller import (
+    AnalyticsRepositoryImpl,
+)
+
+from src.features.record.controller.record_repository import RecordRepository
 
 
 def inject(
     dbClient: DatabaseService,
 ) -> MainAppWrapper:
-    ## datasources
-    book_source = LocalBookSource(dbClient)
-    student_source = LocalStudentDataSource(dbClient)
 
-    ## repositories
-    book_repo = BookRepositoryImpl(book_source)
-    student_repo = StudentRepositoryImpl(student_source)
-
-    ## usecases
-    book_create_usecase = BookCreateUseCase(book_repo)
-    book_get_all_usecase = BookGetAllUseCase(book_repo)
-    book_get_usecase = BookGetUseCase(book_repo)
-    book_update_usecase = BookUpdateUseCase(book_repo)
-    book_delete_usecase = BookDeleteUseCase(book_repo)
-
-    student_create_usecase = StudentCreateUseCase(student_repo)
-    student_get_all_usecase = StudentGetAllUseCase(student_repo)
-    student_get_usecase = StudentGetUseCase(student_repo)
-    student_update_usecase = StudentUpdateUseCase(student_repo)
-    student_delete_usecase = StudentDeleteUseCase(student_repo)
-
-    update_student_record_usecase = UpdateStudentRecordUseCase(student_repo)
-    book_update_record_usecase = BookUpdateRecordUseCase(book_repo)
+    book_repo = BookRepoImpl(db=dbClient)
+    student_repo = StudentRepoImpl(db=dbClient)
+    analytics_repo = AnalyticsRepositoryImpl(db=dbClient)
+    record_repo = RecordRepository(db=dbClient)
 
     book_issue_dialog_wrapper = BookIssueDialogWrapper(
-        student_get_usecase=student_get_usecase,
-        student_update_record_usecase=update_student_record_usecase,
-        book_update_record_usecase=book_update_record_usecase,
+        record_repo=record_repo,
+        student_repo=student_repo,
     )
 
     book_wrapper = BookWrapper(
-        book_create_usecase=book_create_usecase,
-        book_get_all_usecase=book_get_all_usecase,
-        book_update_usecase=book_update_usecase,
-        book_delete_usecase=book_delete_usecase,
+        book_repo=book_repo,
         book_issue_dialog_wrapper=book_issue_dialog_wrapper,
     )
+
     student_wrapper = StudentWrapper(
-        student_create_usecase=student_create_usecase,
-        student_get_all_usecase=student_get_all_usecase,
-        student_update_usecase=student_update_usecase,
-        student_delete_usecase=student_delete_usecase,
-        student_update_record_usecase=update_student_record_usecase,
-        book_update_record_usecase=book_update_record_usecase,
+        student_repo=student_repo,
+        record_repo=record_repo,
     )
 
     home_screen_wrapper = HomeScreenWrapper(
         wrappers=(book_wrapper, student_wrapper),
+        analytics_repo=analytics_repo,
     )
 
     auth_screen_wrapper = AuthScreenWrapper()

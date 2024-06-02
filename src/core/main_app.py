@@ -15,6 +15,7 @@ class MainApp(_tk.Tk):
     ):
         super().__init__()
 
+        self.title("Library Management System")
         self.geometry("1200x600+100+100")
         self.resizable(False, False)
         self.config(

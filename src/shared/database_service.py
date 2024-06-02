@@ -13,7 +13,7 @@ class DatabaseService(ABC):
 
     @abstractmethod
     def mutation(
-        self, query: str, parameters: tuple[str | None, ...] = ()
+        self, query: str, parameters: tuple[str | int | None, ...] = ()
     ) -> str | None:
         pass
 
@@ -32,7 +32,7 @@ class SQLiteDatabaseService(DatabaseService):
         return res
 
     def mutation(
-        self, query: str, parameters: tuple[str | None, ...] = ()
+        self, query: str, parameters: tuple[str | int | None, ...] = ()
     ) -> str | None:
         self.cursor.execute(query, parameters)
         self.conn.commit()

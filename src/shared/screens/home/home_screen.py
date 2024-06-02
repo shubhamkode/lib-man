@@ -6,9 +6,14 @@ import time
 
 from src.shared.screens.home.components.info_card import InfoCard
 
-from src.features.book.presentation.book_screen import BookWrapper
-from src.features.student.presentation.student_screen import (
+from src.features.book.view.book_screen import BookWrapper
+from src.features.student.view.student_screen import (
     StudentWrapper,
+)
+
+
+from src.features.analytics.controller import (
+    AnalyticsRepository,
 )
 
 
@@ -18,17 +23,22 @@ from dataclasses import dataclass
 @dataclass
 class HomeScreenWrapper:
     wrappers: tuple[BookWrapper, StudentWrapper]
+    analytics_repo: AnalyticsRepository
 
     def run(self, master):
-        return HomeScreen(master, self)
+        return HomeScreen(
+            master,
+            self.wrappers,
+            self.analytics_repo,
+        )
 
 
 class HomeScreen(_tk.Frame):
     def __init__(
         self,
         master,
-        wrapper: HomeScreenWrapper,
-        # wrappers: tuple[BookWrapper, StudentWrapper],
+        wrappers: tuple[BookWrapper, StudentWrapper],
+        analytics_repo: AnalyticsRepository,
     ):
         super().__init__(master)
 
@@ -37,24 +47,17 @@ class HomeScreen(_tk.Frame):
             padx=15,
             pady=15,
         )
-        self.wrappers = wrapper.wrappers
+        self.wrappers = wrappers
+        self.analytics_repo = analytics_repo
 
-        books = self.wrappers[0].book_get_all_usecase()
-        students = self.wrappers[1].student_get_all_usecase()
+        analytics_data = self.analytics_repo.get()
 
-        self.students_len_info = _tk.IntVar(self, len(students))
+        self.students_len_info = _tk.IntVar(self, analytics_data.student_count)
 
-        self.books_len_info = _tk.IntVar(self, len(books))
+        self.books_len_info = _tk.IntVar(self, analytics_data.book_count)
         self.borrowed_len_info = _tk.IntVar(
             self,
-            len(
-                list(
-                    filter(
-                        lambda book: book.student_id != None,
-                        books,
-                    ),
-                )
-            ),
+            analytics_data.borrowed_book_count,
         )
 
         self.data = {
@@ -66,7 +69,6 @@ class HomeScreen(_tk.Frame):
         self.screens = (
             self.wrappers[0].run(self),
             self.wrappers[1].run(self),
-            # wrappers[1].run(self, self.reset_info),
         )  # type ignore
 
         self.bind_all(
@@ -92,8 +94,8 @@ class HomeScreen(_tk.Frame):
         self.columnconfigure(0, weight=1)
 
     def refresh_table(self, event=None):
-        self.screens[0].book_view_frame.refresh_table()
-        self.screens[1].student_table_frame.refresh_table()
+        self.screens[0].refresh_book_table()
+        self.screens[1].refresh_students_table()
 
         return "break"
 
@@ -162,8 +164,6 @@ class HomeScreen(_tk.Frame):
         # info-metrics
         info_frame = _tk.Frame(
             main_menu_frame,
-            # highlightbackground="blue",
-            # highlightthickness=4,
         )
 
         info_frame.grid(
@@ -229,13 +229,12 @@ class HomeScreen(_tk.Frame):
             )
 
     def reset_info(self, event=None):
-        books = self.wrappers[0].book_get_all_usecase()
-        students = self.wrappers[1].student_get_all_usecase()
+        analytics_data = self.analytics_repo.get()
 
-        self.students_len_info.set(len(students))
-        self.books_len_info.set(len(books))
+        self.students_len_info.set(analytics_data.student_count)
+        self.books_len_info.set(analytics_data.book_count)
         self.borrowed_len_info.set(
-            len(list(filter(lambda book: book.student_id != None, books)))
+            analytics_data.borrowed_book_count,
         )
 
         return "break"
