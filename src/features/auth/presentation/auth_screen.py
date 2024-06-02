@@ -39,6 +39,7 @@ class AuthScreen(_ttk.Frame):
             self,
             font=("", 12),
             style="Auth.TEntry",
+            width=30,
             textvariable=self.email_var,
         ).grid(
             column=0,

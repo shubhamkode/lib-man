@@ -226,6 +226,8 @@ class BookIssueDialog(_tk.Toplevel):
             sticky=_tk.EW,
         )
 
+        self.submit_btn.bind("<Return>", lambda event: self.update_result())
+
         for widget in frame.winfo_children():
             widget.grid(padx=5, pady=4)
 

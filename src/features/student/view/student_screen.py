@@ -146,13 +146,13 @@ class StudentScreen(_ttk.Frame):
         ):
             return
         for student in self.selected_students:
-            if student.book_id == None:
+            print(student)
+            if student.book_id == "None":
                 self.student_repo.delete(where={"id": student.id, "roll_no": None})
             else:
                 _msg.showerror(
-                    f"Unable to delete Student with Roll no: {student.roll_no}"
+                    "Error", f"Unable to delete Student with Roll no: {student.roll_no}"
                 )
-                
 
         self.selected_students = []
 

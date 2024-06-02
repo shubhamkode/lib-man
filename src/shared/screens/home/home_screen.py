@@ -197,7 +197,7 @@ class HomeScreen(_tk.Frame):
         )
 
         self.after(
-            1000 * 60,
+            1000,
             self.update_time,
         )
 
@@ -206,7 +206,7 @@ class HomeScreen(_tk.Frame):
             f"""{date.today().strftime("%B %d, %Y")}: {time.strftime("%H:%M", time.localtime())}""",
         )
         self.after(
-            1000 * 60,
+            1000,
             self.update_time,
         )
 

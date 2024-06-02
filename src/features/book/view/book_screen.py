@@ -189,7 +189,12 @@ class BookScreen(_ttk.Frame):
             "Selected books will be deleted. This action cannot be undone.",
         ):
             for book in self.selected_books:
-                self.book_repo.delete(where={"id": book.id})
+                if book.student_id == "None":
+                    self.book_repo.delete(where={"id": book.id})
+                else:
+                    _msg.showerror(
+                        "Error", f"Unable to delete book with book_id: {book.id}"
+                    )
 
         self.refresh_book_table()
 
