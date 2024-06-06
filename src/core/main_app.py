@@ -1,6 +1,4 @@
 import tkinter as _tk
-import tkinter.ttk as _ttk
-
 from dataclasses import dataclass
 
 from src.shared.screens.home.home_screen import HomeScreenWrapper
@@ -18,11 +16,8 @@ class MainApp(_tk.Tk):
         self.title("Library Management System")
         self.geometry("1200x600+100+100")
         self.resizable(False, False)
-        self.config(
-            background="white",
-            padx=10,
-            pady=5,
-        )
+
+        self.config(background="white", padx=15, pady=15)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -34,11 +29,6 @@ class MainApp(_tk.Tk):
         )
 
         self.home_screen = home_screen_wrapper.run(self)
-        # self.home_screen.grid(
-        #     column=0,
-        #     row=0,
-        #     sticky=_tk.NSEW,
-        # )
 
         self.bind_all("<<LoginSuccess>>", self.handle_login_success)
 

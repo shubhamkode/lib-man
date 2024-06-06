@@ -22,7 +22,6 @@ class AuthScreen(_ttk.Frame):
         self.email_var = _tk.StringVar()
         self.password_var = _tk.StringVar()
 
-
         _ttk.Label(self, text="Welcome Back!", font=("", 16, "bold")).grid(
             column=0,
             row=0,

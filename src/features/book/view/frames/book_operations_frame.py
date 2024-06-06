@@ -35,8 +35,6 @@ class BookOperationsFrame(_ttk.Frame):
 
         self.config(padding=(10, 10))
 
-        self.grab_set()
-
         _ttk.Label(
             self,
             text=f"""{"Add" if self.book == None else "Update"} Book:- """,

@@ -4,6 +4,7 @@ from datetime import date
 import time
 
 
+
 from src.shared.screens.home.components.info_card import InfoCard
 
 from src.features.book.view.book_screen import BookWrapper
@@ -33,7 +34,7 @@ class HomeScreenWrapper:
         )
 
 
-class HomeScreen(_tk.Frame):
+class HomeScreen(_ttk.Frame):
     def __init__(
         self,
         master,
@@ -42,11 +43,7 @@ class HomeScreen(_tk.Frame):
     ):
         super().__init__(master)
 
-        self.config(
-            background="white",
-            padx=15,
-            pady=15,
-        )
+
         self.wrappers = wrappers
         self.analytics_repo = analytics_repo
 
@@ -145,7 +142,7 @@ class HomeScreen(_tk.Frame):
         ).grid(
             column=0,
             row=1,
-            padx=5,
+            padx=3,
             sticky=_tk.W,
         )
 
