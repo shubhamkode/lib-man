@@ -4,8 +4,9 @@ import tkinter.ttk as _ttk
 
 from src.features.student.model.student_model import Student
 
+import src.core.widgets.LibFrame as _lib
 
-class StudentTableFrame(_ttk.Frame):
+class StudentTableFrame(_lib.StyledLibFrame):
     def __init__(self, master, students: list[Student]):
         super().__init__(master)
 

@@ -1,9 +1,10 @@
 import tkinter.ttk as _ttk
 import tkinter as _tk
 from typing import Callable
+import src.core.widgets.LibFrame as _lib
 
 
-class MenuFrame(_ttk.Frame):
+class MenuFrame(_lib.StyledLibFrame):
     def __init__(
         self,
         master,
@@ -16,11 +17,11 @@ class MenuFrame(_ttk.Frame):
 
         paddings = {"padx": 5, "pady": 4}
 
-        self.add_book_btn = _ttk.Button(
+        self.add_book_btn = _lib.StyledLibButton(
             self, text="Add Book", width=20, command=lambda: self.handle(on_book_add)
         )
         self.add_book_btn.grid(column=0, row=2, **paddings)
-        self.delete_book_btn = _ttk.Button(
+        self.delete_book_btn = _lib.StyledLibButton(
             self,
             text="Delete Book",
             width=20,
@@ -29,7 +30,7 @@ class MenuFrame(_ttk.Frame):
         )
         self.delete_book_btn.grid(column=0, row=4, **paddings)
 
-        self.update_book_btn = _ttk.Button(
+        self.update_book_btn = _lib.StyledLibButton(
             self,
             text="Update Book",
             width=20,
@@ -45,7 +46,7 @@ class MenuFrame(_ttk.Frame):
             pady=8,
         )
 
-        self.issue_btn = _ttk.Button(
+        self.issue_btn = _lib.StyledLibButton(
             self,
             text="Issue Book",
             width=20,

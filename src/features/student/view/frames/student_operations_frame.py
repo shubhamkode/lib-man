@@ -2,6 +2,8 @@ import tkinter as _tk
 import tkinter.ttk as _ttk
 import tkinter.messagebox as _msg
 
+import src.core.widgets.LibFrame as _lib
+
 from typing import Callable
 from dataclasses import dataclass
 
@@ -12,7 +14,8 @@ from src.features.student.model.student_model import (
 )
 
 
-class StudentOperationsFrame(_ttk.Frame):
+
+class StudentOperationsFrame(_lib.StyledLibFrame):
     def __init__(
         self,
         master,
@@ -47,20 +50,20 @@ class StudentOperationsFrame(_ttk.Frame):
         self.add_widgets()
 
     def add_widgets(self):
-        _ttk.Label(
+        _lib.StyledLibLabel(
             self,
             text=f"""{"Add" if self.student == None else "Update"} Student:- """,
             font=("Arial", 14, "bold"),
         ).grid(column=0, row=0, sticky=_tk.NE)
 
-        input_frame = _ttk.Frame(self)
+        input_frame = _lib.StyledLibFrame(self)
 
         input_frame.grid(column=1, row=0, sticky=_tk.NSEW)
 
         input_frame.columnconfigure(0, weight=2)
         input_frame.columnconfigure(1, weight=3)
 
-        _ttk.Label(input_frame, text="Enter Name: ").grid(
+        _lib.StyledLibLabel(input_frame, text="Enter Name: ").grid(
             column=0,
             row=0,
             pady=5,
@@ -80,7 +83,7 @@ class StudentOperationsFrame(_ttk.Frame):
 
         name_entry.focus()
 
-        _ttk.Label(input_frame, text="Enter Contact: ").grid(
+        _lib.StyledLibLabel(input_frame, text="Enter Contact: ").grid(
             column=0,
             row=1,
             sticky=_tk.E,
@@ -94,7 +97,7 @@ class StudentOperationsFrame(_ttk.Frame):
             sticky=_tk.EW,
         )
 
-        _ttk.Label(
+        _lib.StyledLibLabel(
             input_frame,
             text="Enter Roll No: ",
         ).grid(

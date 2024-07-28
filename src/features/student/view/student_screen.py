@@ -16,6 +16,8 @@ from src.features.student.model.student_model import (
 from src.features.student.controller.student_repo import StudentRepository
 from src.features.record.controller.record_repository import RecordRepository
 
+import src.core.widgets.LibFrame as _lib
+
 
 @dataclass
 class StudentWrapper:
@@ -31,7 +33,7 @@ class StudentWrapper:
         )  # type: ignore
 
 
-class StudentScreen(_ttk.Frame):
+class StudentScreen(_lib.StyledLibFrame):
     def __init__(
         self,
         master,

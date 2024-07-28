@@ -1,7 +1,9 @@
 import tkinter as _tk
 import tkinter.ttk as _ttk
 
-class InfoCard(_ttk.Frame):
+import src.core.widgets.LibFrame as _lib
+
+class InfoCard(_lib.StyledLibFrame):
     def __init__(
         self,
         master,  # type: ignore
@@ -16,7 +18,7 @@ class InfoCard(_ttk.Frame):
 
         self.columnconfigure(0, weight=1)
 
-        _ttk.Label(
+        _lib.StyledLibLabel(
             self,
             textvariable=self.value,
             anchor="center",
@@ -27,7 +29,7 @@ class InfoCard(_ttk.Frame):
             row=0,
             sticky=_tk.NSEW,
         )
-        _ttk.Label(
+        _lib.StyledLibLabel(
             self,
             text=self.tag.capitalize(),
             anchor="center",

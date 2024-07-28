@@ -1,9 +1,11 @@
 import tkinter as _tk
-import tkinter.ttk as _ttk
 import tkinter.messagebox as _msg
 import re
 
+
 from src.utils import AuthException
+
+import src.core.widgets.LibFrame as _lib
 
 
 class AuthScreenWrapper:
@@ -11,9 +13,13 @@ class AuthScreenWrapper:
         return AuthScreen(master)
 
 
-class AuthScreen(_ttk.Frame):
+class AuthScreen(_lib.StyledLibFrame):
     def __init__(self, master):
-        super().__init__(master)
+        super().__init__(
+            master,
+        )
+
+        # Remove
 
         self.columnconfigure(0, weight=1)
 
@@ -22,22 +28,25 @@ class AuthScreen(_ttk.Frame):
         self.email_var = _tk.StringVar()
         self.password_var = _tk.StringVar()
 
-        _ttk.Label(self, text="Welcome Back!", font=("", 16, "bold")).grid(
+        _lib.StyledLibLabel(
+            self,
+            text="Welcome Back!",
+            font=("", 16, "bold"),
+        ).grid(
             column=0,
             row=0,
             pady=(0, 16),
             sticky=_tk.W,
         )
 
-        _ttk.Label(self, text="Email").grid(
+        _lib.StyledLibLabel(self, text="Email").grid(
             column=0,
             row=1,
             sticky=_tk.W,
         )
-        _ttk.Entry(
+        _lib.StyledLibEntry(
             self,
             font=("", 12),
-            style="Auth.TEntry",
             width=30,
             textvariable=self.email_var,
         ).grid(
@@ -46,7 +55,7 @@ class AuthScreen(_ttk.Frame):
             pady=(4, 12),
             sticky=_tk.EW,
         )
-        _ttk.Label(
+        _lib.StyledLibLabel(
             self,
             text="Password",
         ).grid(
@@ -54,10 +63,9 @@ class AuthScreen(_ttk.Frame):
             row=3,
             sticky=_tk.W,
         )
-        _ttk.Entry(
+        _lib.StyledLibEntry(
             self,
             font=("", 12),
-            style="Auth.TEntry",
             textvariable=self.password_var,
         ).grid(
             column=0,
@@ -66,7 +74,7 @@ class AuthScreen(_ttk.Frame):
             sticky=_tk.EW,
         )
 
-        login_button = _ttk.Button(
+        login_button = _lib.StyledLibButton(
             self,
             text="Submit",
             command=self.handle_submit,
@@ -84,7 +92,7 @@ class AuthScreen(_ttk.Frame):
             self.handle_submit,
         )
 
-        _ttk.Style(self).configure("Auth.TEntry", padding="6 4 4 4")
+        # _ttk.Style(self).configure("Auth.TEntry", padding="6 4 4 4")
 
     # def validate_
 

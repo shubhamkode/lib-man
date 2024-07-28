@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from src.shared.screens.home.home_screen import HomeScreenWrapper
 from src.features.auth import AuthScreenWrapper
 
+from src.core.colors import COLORS
+
 
 class MainApp(_tk.Tk):
     def __init__(
@@ -17,18 +19,21 @@ class MainApp(_tk.Tk):
         self.geometry("1200x600+100+100")
         self.resizable(False, False)
 
-        self.config(background="white", padx=15, pady=15)
+        self.config(background=COLORS["mixed-100"], padx=15, pady=15)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
         self.auth_screen = auth_screen_wrapper(self)
-        self.auth_screen.grid(
-            column=0,
-            row=0,
-        )
+        # self.auth_screen.grid(
+        #     column=0,
+        #     row=0,
+        # )
 
         self.home_screen = home_screen_wrapper.run(self)
+
+        #REMOVE
+        self.home_screen.grid(column=0, row=0, sticky=_tk.NSEW)
 
         self.bind_all("<<LoginSuccess>>", self.handle_login_success)
 

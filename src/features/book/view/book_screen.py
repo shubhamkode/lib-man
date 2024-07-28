@@ -21,6 +21,7 @@ from .frames import (
 from src.features.book.controller.book_repository import BookRepository
 
 from dataclasses import dataclass
+import src.core.widgets.LibFrame as _lib
 
 
 @dataclass
@@ -37,7 +38,7 @@ class BookWrapper:
         )  # type: ignore
 
 
-class BookScreen(_ttk.Frame):
+class BookScreen(_lib.StyledLibFrame):
     def __init__(
         self,
         master,
@@ -92,7 +93,7 @@ class BookScreen(_ttk.Frame):
 
     def add_menu(self) -> _tk.Widget:
 
-        menu_frame = _ttk.Frame(self)
+        menu_frame = _lib.StyledLibFrame(self)
 
         menu_frame.rowconfigure(0, weight=1)
         menu_frame.columnconfigure(0, weight=1)

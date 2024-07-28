@@ -9,9 +9,10 @@ from src.features.book.model.book_model import (
 )
 
 from dataclasses import dataclass
+import src.core.widgets.LibFrame as _lib
 
 
-class BookOperationsFrame(_ttk.Frame):
+class BookOperationsFrame(_lib.StyledLibFrame):
     def __init__(
         self,
         master,
@@ -35,7 +36,7 @@ class BookOperationsFrame(_ttk.Frame):
 
         self.config(padding=(10, 10))
 
-        _ttk.Label(
+        _lib.StyledLibLabel(
             self,
             text=f"""{"Add" if self.book == None else "Update"} Book:- """,
             font=("Arial", 14, "bold"),
@@ -45,7 +46,7 @@ class BookOperationsFrame(_ttk.Frame):
             sticky=_tk.NE,
         )
 
-        input_frame = _ttk.Frame(
+        input_frame = _lib.StyledLibFrame(
             self,
         )
         input_frame.grid(
@@ -58,17 +59,16 @@ class BookOperationsFrame(_ttk.Frame):
         input_frame.columnconfigure(1, weight=3)
 
         # Title
-        _ttk.Label(input_frame, text="Enter Title: ").grid(
+        _lib.StyledLibLabel(input_frame, text="Enter Title: ").grid(
             column=0,
             row=0,
             pady=5,
             sticky=_tk.E,
         )
 
-        title_entry = _ttk.Entry(
+        title_entry = _lib.StyledLibEntry(
             input_frame,
             textvariable=self.title_var,
-            style="BookOperations.TEntry",
             width=30,
         )
         title_entry.grid(
@@ -80,29 +80,27 @@ class BookOperationsFrame(_ttk.Frame):
 
         title_entry.focus()
 
-        _ttk.Label(input_frame, text="Enter Author: ").grid(
+        _lib.StyledLibLabel(input_frame, text="Enter Author: ").grid(
             column=0,
             row=1,
             sticky=_tk.E,
         )
-        _ttk.Entry(
+        _lib.StyledLibEntry(
             input_frame,
             textvariable=self.author_var,
-            style="BookOperations.TEntry",
         ).grid(
             column=1,
             columnspan=2,
             row=1,
             sticky=_tk.EW,
         )
-        _ttk.Label(input_frame, text="Enter Publisher: ").grid(
+        _lib.StyledLibLabel(input_frame, text="Enter Publisher: ").grid(
             column=0,
             row=2,
             sticky=_tk.E,
         )
-        _ttk.Entry(
+        _lib.StyledLibEntry(
             input_frame,
-            style="BookOperations.TEntry",
             textvariable=self.publisher_var,
         ).grid(
             column=1,
@@ -111,7 +109,7 @@ class BookOperationsFrame(_ttk.Frame):
             sticky=_tk.EW,
         )
 
-        cancel_btn = _ttk.Button(
+        cancel_btn = _lib.StyledLibButton(
             input_frame,
             text="Cancel",
             command=lambda: self.on_cancel() if self.on_cancel != None else None,
@@ -122,7 +120,7 @@ class BookOperationsFrame(_ttk.Frame):
             row=3,
             sticky=_tk.E,
         )
-        submit_btn = _ttk.Button(
+        submit_btn = _lib.StyledLibButton(
             input_frame,
             text="Submit",
             width=20,
@@ -143,7 +141,6 @@ class BookOperationsFrame(_ttk.Frame):
             lambda event: self.handle_submit(),
         )
 
-        _ttk.Style(self).configure("BookOperations.TEntry", padding="6 4 4 4")
 
         for widget in self.winfo_children():
             widget.grid(

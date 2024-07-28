@@ -4,7 +4,6 @@ from datetime import date
 import time
 
 
-
 from src.shared.screens.home.components.info_card import InfoCard
 
 from src.features.book.view.book_screen import BookWrapper
@@ -20,6 +19,8 @@ from src.features.analytics.controller import (
 
 from dataclasses import dataclass
 
+import src.core.widgets.LibFrame as _lib
+
 
 @dataclass
 class HomeScreenWrapper:
@@ -34,7 +35,7 @@ class HomeScreenWrapper:
         )
 
 
-class HomeScreen(_ttk.Frame):
+class HomeScreen(_lib.StyledLibFrame):
     def __init__(
         self,
         master,
@@ -42,7 +43,6 @@ class HomeScreen(_ttk.Frame):
         analytics_repo: AnalyticsRepository,
     ):
         super().__init__(master)
-
 
         self.wrappers = wrappers
         self.analytics_repo = analytics_repo
@@ -79,11 +79,11 @@ class HomeScreen(_ttk.Frame):
 
         self.add_widgets()
 
-        _ttk.Style(self).configure(  # type: ignore
-            ".",
-            font=("Arial", 11),
-            background="white",
-        )
+        # _ttk.Style(self).configure(  # type: ignore
+        #     ".",
+        #     font=("Arial", 11),
+        #     background="white",
+        # )
 
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=25)
@@ -103,7 +103,7 @@ class HomeScreen(_ttk.Frame):
             f"""{date.today().strftime("%B %d, %Y")}: {time.strftime("%H:%M", time.localtime())}""",
         )
 
-        main_menu_frame = _ttk.Frame(
+        main_menu_frame = _lib.StyledLibFrame(
             self,
         )
         main_menu_frame.grid(
@@ -117,7 +117,7 @@ class HomeScreen(_ttk.Frame):
 
         main_menu_frame.rowconfigure(0, weight=1)
 
-        intro_frame = _ttk.Frame(
+        intro_frame = _lib.StyledLibFrame(
             main_menu_frame,
         )
         intro_frame.grid(
@@ -126,7 +126,7 @@ class HomeScreen(_ttk.Frame):
             sticky=_tk.NSEW,
         )
 
-        _ttk.Label(
+        _lib.StyledLibLabel(
             intro_frame,
             text="Hello, Admin!",
             font=("Arial", 20),
@@ -135,7 +135,7 @@ class HomeScreen(_ttk.Frame):
             row=0,
             sticky=_tk.W,
         )
-        _ttk.Label(
+        _lib.StyledLibLabel(
             intro_frame,
             textvariable=self.time_var,
             font=("Arial", 13),
@@ -146,7 +146,7 @@ class HomeScreen(_ttk.Frame):
             sticky=_tk.W,
         )
 
-        _ttk.Button(
+        _lib.StyledLibButton(
             main_menu_frame,
             text="Toggle Book/Student",
             command=self.toggle_view,
@@ -159,7 +159,8 @@ class HomeScreen(_ttk.Frame):
         )
 
         # info-metrics
-        info_frame = _tk.Frame(
+        # info_frame = _tk.Frame(
+        info_frame=_lib.StyledLibFrame(
             main_menu_frame,
         )
 

@@ -1,10 +1,12 @@
 import tkinter as _tk
 import tkinter.ttk as _ttk
 
+import src.core.widgets.LibFrame as _lib
+
 from src.features.book.model.book_model import Book
 
 
-class BookViewFrame(_ttk.Frame):
+class BookViewFrame(_lib.StyledLibFrame):
     def __init__(self, master, books: list[Book] = []):
         super().__init__(master)
 

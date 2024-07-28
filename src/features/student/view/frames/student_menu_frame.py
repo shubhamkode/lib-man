@@ -2,8 +2,10 @@ import tkinter.ttk as _ttk
 import tkinter as _tk
 from typing import Callable
 
+import src.core.widgets.LibFrame as _lib
 
-class StudentMenuFrame(_ttk.Frame):
+
+class StudentMenuFrame(_lib.StyledLibFrame):
     def __init__(
         self,
         master,
@@ -16,7 +18,7 @@ class StudentMenuFrame(_ttk.Frame):
 
         paddings = {"padx": 5, "pady": 4}
 
-        self.add_btn = _ttk.Button(
+        self.add_btn = _lib.StyledLibButton(
             self,
             text="Add Student",
             width=20,
@@ -24,7 +26,7 @@ class StudentMenuFrame(_ttk.Frame):
         )
         self.add_btn.grid(column=0, row=2, **paddings)
 
-        self.delete_btn = _ttk.Button(
+        self.delete_btn = _lib.StyledLibButton(
             self,
             text="Delete Student",
             width=20,
@@ -33,7 +35,7 @@ class StudentMenuFrame(_ttk.Frame):
         )
         self.delete_btn.grid(column=0, row=4, **paddings)
 
-        self.update_btn = _ttk.Button(
+        self.update_btn = _lib.StyledLibButton(
             self,
             text="Update Student",
             width=20,
@@ -49,7 +51,7 @@ class StudentMenuFrame(_ttk.Frame):
             pady=8,
         )
 
-        self.return_btn = _ttk.Button(
+        self.return_btn = _lib.StyledLibButton(
             self,
             text="Return Book",
             width=20,
