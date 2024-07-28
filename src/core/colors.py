@@ -1,3 +1,4 @@
+from typing import TypedDict
 
 class AppTheme(TypedDict):
     surface: str
